@@ -1,12 +1,14 @@
 import { TDoughnutChartData } from '../types'
+import { useColors } from 'vuestic-ui'
+const { colors } = useColors()
 
 export const doughnutChartData: TDoughnutChartData = {
-  labels: ['North America', 'South America', 'Australia'],
+  labels: ['Las Tunas', 'Holguin', 'Camaguey'],
   datasets: [
     {
       label: 'Population (millions)',
-      backgroundColor: ['danger', 'info', 'primary'],
-      data: [2478, 5267, 734],
+      backgroundColor: [colors.success, colors.danger, colors.info],
+      data: [500, 600, 300],
     },
   ],
 }

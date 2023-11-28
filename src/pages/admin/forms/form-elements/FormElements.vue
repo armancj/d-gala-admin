@@ -232,7 +232,7 @@
   const withIcon = ref('')
   const withButton = ref('')
   const withDescription = ref('')
-  const clearableText = ref('Vasili Savitski')
+  const clearableText = ref('1Vasili Savitski')
   const successfulEmail = ref('andrei@dreamsupport.io')
   const wrongEmail = ref('andrei@dreamsupport')
   const messages = ref([

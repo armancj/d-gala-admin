@@ -33,12 +33,12 @@
     {
       options: () => [
         {
-          code: 'gb',
-          name: 'english',
-        },
-        {
           code: 'es',
           name: 'spanish',
+        },
+        {
+          code: 'gb',
+          name: 'english',
         },
         {
           code: 'br',

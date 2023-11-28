@@ -49,7 +49,7 @@
   function onsubmit() {
     if (!formReady.value) return
 
-    emailErrors.value = email.value ? [] : ['Email is required']
+    emailErrors.value = email.value ? ['Email is required'] : ['Email is required']
     passwordErrors.value = password.value ? [] : ['Password is required']
 
     router.push({ name: 'dashboard' })

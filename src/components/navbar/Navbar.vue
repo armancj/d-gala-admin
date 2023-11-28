@@ -13,7 +13,7 @@
         </router-link>
       </div>
     </template>
-    <div class="app-navbar-center">
+    <!--    <div class="app-navbar-center">
       <span class="hidden md:block mr-2">{{ t('navbar.messageUs') }}</span>
       <a class="hidden md:block mr-2" href="mailto:hello@epicmax.co" target="_blank" :style="{ color: colors.primary }">
         hello@epicmax.co
@@ -27,7 +27,7 @@
       >
         {{ t('navbar.repository') }}
       </va-button>
-    </div>
+    </div>-->
     <template #right>
       <app-navbar-actions class="app-navbar__actions" :user-name="userName" />
     </template>
@@ -57,6 +57,7 @@
   .va-navbar {
     box-shadow: var(--va-box-shadow);
     z-index: 2;
+    padding-left: initial;
 
     @media screen and (max-width: 950px) {
       .left {
