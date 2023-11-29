@@ -65,6 +65,7 @@
           username: email.value,
           password: password.value,
         })
+        console.log(response)
         localStorage.setItem('user', JSON.stringify(response))
         await router.push({ name: 'dashboard' })
       } catch (error) {

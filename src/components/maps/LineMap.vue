@@ -19,9 +19,9 @@
     compareStrings,
   } from '../../data/maps/lineMapData'
 
-  const generateLabelText = (city?: string) => (city ? `Flights from ${city}` : '')
+  const generateLabelText = (city?: string) => (city ? `ventas de ${city}` : '')
 
-  const generateButtonText = (city: string) => `Show flights from ${city}`
+  const generateButtonText = (city: string) => `ventas de ${city}`
 
   const props = withDefaults(
     defineProps<{
