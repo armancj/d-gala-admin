@@ -18,6 +18,10 @@
       :error-messages="passwordErrors"
     />
 
+    <div v-if="loginError" class="error-message mb-4" :error-messages="loginError">
+      {{ loginError }}
+    </div>
+
     <div class="auth-layout__options flex items-center justify-between">
       <va-checkbox v-model="keepLoggedIn" class="mb-0" :label="t('auth.keep_logged_in')" />
       <router-link class="ml-1 va-link" :to="{ name: 'recover-password' }">{{
@@ -35,6 +39,8 @@
   import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
+  import axios from 'axios'
+  import { Data, LoginResponse, makeRequest } from '../../../util/ApiClient'
   const { t } = useI18n()
 
   const email = ref('')
@@ -42,16 +48,34 @@
   const keepLoggedIn = ref(false)
   const emailErrors = ref<string[]>([])
   const passwordErrors = ref<string[]>([])
+  const loginError = ref('')
   const router = useRouter()
 
   const formReady = computed(() => !emailErrors.value.length && !passwordErrors.value.length)
 
-  function onsubmit() {
+  async function onsubmit() {
     if (!formReady.value) return
 
-    emailErrors.value = email.value ? ['Email is required'] : ['Email is required']
-    passwordErrors.value = password.value ? [] : ['Password is required']
+    emailErrors.value = email.value ? [] : ['El correo o el nombre de usario es requerido']
+    passwordErrors.value = password.value ? [] : ['La contraseña es requireda']
 
-    router.push({ name: 'dashboard' })
+    if (formReady.value) {
+      try {
+        const response = await makeRequest<Data<LoginResponse>>('/api/rest/v1/auth/login', {
+          username: email.value,
+          password: password.value,
+        })
+        localStorage.setItem('user', JSON.stringify(response))
+        await router.push({ name: 'dashboard' })
+      } catch (error) {
+        loginError.value = 'Invalido email o contraseña'
+      }
+    }
   }
 </script>
+
+<style scoped>
+  .error-message {
+    color: red;
+  }
+</style>

@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import { LoginResponse } from '../util/ApiClient'
 
 export const useGlobalStore = defineStore('global', {
   state: () => {
     return {
       isSidebarMinimized: false,
-      userName: 'ss',
+      userName: loadUser().payload.username,
     }
   },
 
@@ -19,3 +19,7 @@ export const useGlobalStore = defineStore('global', {
     },
   },
 })
+
+export function loadUser() {
+  return JSON.parse(localStorage.getItem('user')!) as LoginResponse
+}
