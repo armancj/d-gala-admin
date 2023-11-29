@@ -2,7 +2,7 @@
   <div class="auth-layout grid grid-cols-12 content-center">
     <div class="flex col-span-12 p-4 justify-center">
       <router-link class="py-5 justify-center flex" to="/">
-        <vuestic-logo height="32" />
+        <vuestic-logo height="64" />
       </router-link>
     </div>
 

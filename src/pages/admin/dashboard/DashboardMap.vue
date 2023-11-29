@@ -17,8 +17,8 @@
   const { t } = useI18n()
 
   const cities = ref(lineMapData.cities)
-  const mainCity = ref('Vilnius')
-  const homeCity = ref('Vilnius')
+  const mainCity = ref('Las Tunas')
+  const homeCity = ref('Las Tunas')
 
   function addAddress(address: { city: string; country: string }) {
     cities.value = cities.value.map((mapItem) =>

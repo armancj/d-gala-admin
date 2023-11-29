@@ -1,18 +1,1 @@
-export default [
-  'Pinar del Río',
-  'Artemisa',
-  'La Habana',
-  'Mayabeque',
-  'Matanzas',
-  'Cienfuegos',
-  'Villa Clara',
-  'Sancti Spíritus',
-  'Ciego de Ávila',
-  'Camagüey',
-  'Las Tunas',
-  'Granma',
-  'Holguín',
-  'Santiago de Cuba',
-  'Guantánamo',
-  'Isla de la Juventud',
-]
+export default ['Cuba', 'España', 'Venezuela', 'Estados Unidos']

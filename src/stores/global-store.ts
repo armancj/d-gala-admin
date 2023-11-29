@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
+import axios from 'axios'
 
 export const useGlobalStore = defineStore('global', {
   state: () => {
     return {
       isSidebarMinimized: false,
-      userName: '1Vasili S',
+      userName: 'ss',
     }
   },
 

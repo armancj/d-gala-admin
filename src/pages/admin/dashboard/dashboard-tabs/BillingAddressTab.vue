@@ -56,11 +56,11 @@
   }>()
 
   const form = reactive({
-    name: 'John Smith',
-    email: 'smith@gmail.com',
-    address: '93  Guild Street',
+    name: 'GDAI',
+    email: 'gdai@gmail.com',
+    address: '11 A',
     city: { text: 'London' },
-    country: 'United Kingdom',
+    country: 'Cuba',
     connection: true,
   })
 

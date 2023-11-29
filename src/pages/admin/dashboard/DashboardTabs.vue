@@ -6,9 +6,9 @@
     <va-card-content>
       <va-tabs v-model="activeTabName" grow>
         <template #tabs>
-          <va-tab name="OverviewTab">
+          <!--          <va-tab name="OverviewTab">
             {{ t('dashboard.tabs.overview.title') }}
-          </va-tab>
+          </va-tab>-->
           <va-tab name="BillingAddressTab">
             {{ t('dashboard.tabs.billingAddress.title') }}
           </va-tab>
