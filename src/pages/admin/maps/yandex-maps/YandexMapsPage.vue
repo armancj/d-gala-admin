@@ -3,8 +3,8 @@
     <va-card class="yandex-maps-page__widget" title="Yandex Maps">
       <yandex-map
         map-type="hybrid"
-        :coords="[55.2, 38.8]"
-        :zoom="8"
+        :coords="[20.96167, -76.95111]"
+        :zoom="9"
         :controls="['trafficControl', 'zoomControl', 'geolocationControl', 'fullscreenControl', 'searchControl']"
         style="width: 100%; height: 65vh"
       >
@@ -25,7 +25,7 @@
   const markers = ref([
     {
       'marker-id': 0,
-      coords: [54.8, 38.9],
+      coords: [20.96167, -76.95111],
       clusterName: '1',
       balloonTemplate: '<div>"Your custom template"</div>',
     },

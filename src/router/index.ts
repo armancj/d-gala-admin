@@ -150,6 +150,11 @@ const routes: Array<RouteRecordRaw> = [
         ],
       },
       UIRoute,
+      {
+        name: 'user',
+        path: 'user',
+        component: () => import('../pages/admin/user/UserTable.vue'),
+      },
     ],
   },
   {

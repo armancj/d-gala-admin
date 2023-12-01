@@ -18,7 +18,7 @@ export default {
         icon: 'vuestic-iconset-dashboard',
       },
     },
-    /* {
+    {
       name: 'statistics',
       displayName: 'menu.statistics',
       meta: {
@@ -35,8 +35,8 @@ export default {
           displayName: 'menu.progressBars',
         },
       ],
-    },*/
-    /*{
+    },
+    {
       name: 'forms',
       displayName: 'menu.forms',
       meta: {
@@ -53,8 +53,8 @@ export default {
           displayName: 'menu.mediumEditor',
         },
       ],
-    },*/
-    /*{
+    },
+    {
       name: 'tables',
       displayName: 'menu.tables',
       meta: {
@@ -70,8 +70,8 @@ export default {
         //   displayName: 'menu.dataTables',
         // },
       ],
-    },*/
-    /* {
+    },
+    {
       name: 'ui',
       displayName: 'menu.uiElements',
       meta: {
@@ -166,8 +166,8 @@ export default {
           displayName: 'menu.typography',
         },
       ],
-    },*/
-    /* {
+    },
+    {
       name: 'maps',
       displayName: 'menu.maps',
       meta: {
@@ -196,8 +196,16 @@ export default {
           displayName: 'menu.line-maps',
         },
       ],
-    },*/
-    /*{
+    },
+    {
+      name: 'user',
+      displayName: 'listar Usuarios',
+      meta: {
+        icon: 'vuestic-iconset-user',
+      },
+      disabled: true,
+    },
+    {
       name: 'pages',
       displayName: 'menu.pages',
       meta: {
@@ -218,6 +226,6 @@ export default {
           displayName: 'menu.faq',
         },
       ],
-    },*/
+    },
   ] as INavigationRoute[],
 }
