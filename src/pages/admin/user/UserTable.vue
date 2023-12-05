@@ -31,36 +31,35 @@
     return row.status === 'inactive' ? 'grey' : ''
   }
 </script>
-
-<va-table>
-<template slot="actions" slot-scope="props">
+<template>
   <va-card>
-    <va-card-title>{{ t("tables.stripedHoverable") }}</va-card-title>
+    <va-card-title>{{ t('tables.stripedHoverable') }}</va-card-title>
     <va-card-content class="overflow-auto">
-      <table class="va-table va-table--striped va-table--hoverable w-full">
+      <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
         <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Country</th>
-          <th>Status</th>
-        </tr>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Country</th>
+            <th>Status</th>
+            <th>xxx</th>
+          </tr>
         </thead>
 
         <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <td>{{ user.name }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.country }}</td>
-          <td>
-            <va-badge :text="user.status" :color="getStatusColor(user.status)" />
-          </td>
-        </tr>
+          <tr v-for="user in users" :key="user.id">
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.country }}</td>
+            <td>
+              <va-badge :text="user.status" :color="getStatusColor(user.status)" />
+            </td>
+            <td>{{ user.country }}</td>
+          </tr>
         </tbody>
       </table>
     </va-card-content>
   </va-card>
 </template>
-</va-table>
 
 <style scoped lang="scss"></style>
