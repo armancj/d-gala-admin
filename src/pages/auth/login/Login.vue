@@ -39,7 +39,6 @@
   import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
-  import axios from 'axios'
   import { Data, LoginResponse, makeRequest } from '../../../util/ApiClient'
   const { t } = useI18n()
 

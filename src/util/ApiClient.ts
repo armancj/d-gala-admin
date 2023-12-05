@@ -4,6 +4,23 @@ export interface Data<T> {
   data: T
 }
 
+export interface DataClass {
+  result: Result[]
+  total: number
+}
+
+export interface Result {
+  id: number
+  createdAt: Date
+  email: string
+  username: string
+  firstname: string
+  lastname: string
+  phone: string
+  role: string
+  status: string
+}
+
 export interface LoginResponse {
   payload: Payload
   access_token: string
