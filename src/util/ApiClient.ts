@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosResponse } from 'axios'
 
 export interface Data<T> {
   data: T
@@ -9,6 +9,13 @@ export interface DataClass {
   total: number
 }
 
+type Messages = string | string[]
+export interface ErrorResult {
+  statusCode: number
+  message: Messages
+  timestamp: string
+  path: string
+}
 export interface Result {
   id: number
   createdAt: Date
@@ -61,5 +68,45 @@ export async function makeRequest<T>(url: string, data?: any) {
       throw new Error('Invalido email o contraseña')
     }
     throw new Error('Problemas de Conexion')
+  }
+}
+
+export async function sendDataToServer<T>(data: T, url: string, token?: string) {
+  return await axios
+    .post<T>(import.meta.env.VITE_BASE_URL + url, JSON.stringify(data), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    .catch((err) => {
+      throw err
+    })
+}
+
+export const handleErrors = async (error: AxiosError<ErrorResult>) => {
+  const errorData = error?.response?.data
+
+  if (errorData?.statusCode === 400)
+    return {
+      toastTitle: 'Petición invalida',
+      toastText: errorData.message as string,
+    }
+
+  if (errorData?.statusCode === 409)
+    return {
+      toastTitle: 'Conflicto en el Sistema',
+      toastText: 'El nombre de  usuario, el correo o el teléfono están en el sistema.',
+    }
+
+  if (errorData?.statusCode === 500)
+    return {
+      toastTitle: 'Error interno del Servidor',
+      toastText: errorData?.message as string,
+    }
+
+  return {
+    toastTitle: 'Error Unknown',
+    toastText: `${error}- code: ${errorData?.statusCode}`,
   }
 }

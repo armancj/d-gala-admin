@@ -1,10 +1,13 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
-  import { useI18n } from 'vue-i18n'
-  import axios from 'axios'
+  import axios, { AxiosError } from 'axios'
   import { loadUser } from '../../../stores/global-store'
-  import { Result } from '../../../util/ApiClient'
+  import { ErrorResult, handleErrors, Result, sendDataToServer } from '../../../util/ApiClient'
+  import { ToastPosition, useToast } from 'vuestic-ui'
+  import * as z from 'zod'
+  const { init } = useToast()
 
+  const url = '/api/rest/v1/users'
   const users = ref<Result[]>([])
   const activePage = ref(1)
   const totalItems = ref(0)
@@ -12,6 +15,33 @@
   const username = ref('')
   const nameAndLastName = ref('')
   const phone = ref('')
+  const toastDuration = ref(3000)
+  const toastPosition = ref<ToastPosition>('bottom-right')
+
+  function getInitialValues() {
+    return {
+      toastColor: 'rgb(21, 141, 227)',
+      toastTitle: 'Accion Ejecutada',
+      toastText: 'Usuario guardado en el servidor correctamente',
+    }
+  }
+
+  const initialValues = getInitialValues()
+  const toastColor = ref(initialValues.toastColor)
+  const toastTitle = ref(initialValues.toastTitle)
+  const toastText = ref(initialValues.toastText)
+
+  function launchToast() {
+    init({
+      message: toastText.value,
+      position: toastPosition.value,
+      duration: Number(toastDuration.value),
+      title: toastTitle.value,
+      closeable: true,
+      color: toastColor.value,
+    })
+  }
+
   const email = ref('')
   const roles = ref([
     { label: 'USER', description: 'Cliente' },
@@ -26,17 +56,16 @@
   const rolesSelectModel = ref(roles.value[0])
   const statusSelectModel = ref(status.value[0])
 
-  const errorMessages = ref(['El campo debe contener un email valido'])
   const itemsPerPage = 10
 
   const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / itemsPerPage)))
   const openForm = () => {
-    showForm.value = true
+    showForm.value = !showForm.value
   }
 
   function getStatusColor(status: string) {
     if (status === 'ACTIVE') {
-      return 'success'
+      return 'info'
     }
 
     /*if (status === 'processing') {
@@ -81,10 +110,56 @@
   watch(activePage, fetchUsers, { immediate: true })
 
   watch(rolesSelectModel, (newVal, oldVal) => {
-    console.log('Rol seleccionado:', newVal)
+    console.log('Rol seleccionado:', newVal, oldVal)
   })
   const refreshUserList = () => {
     fetchUsers()
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const validateData = (data: unknown) => {
+    const nameAndLast = nameAndLastName.value.trim().split(' ', 2)
+
+    const schema = z.object({
+      username: z.string(),
+      firstname: z.string(),
+      lastname: z.string(),
+      role: z.string(),
+      phone: z.string(),
+      email: z.string().email(),
+    })
+
+    return schema.parse(data)
+  }
+
+  const sendData = async () => {
+    const data = validateData({
+      nameAndLastName: nameAndLastName.value,
+      username: username.value,
+      rolesSelectModel: rolesSelectModel.value,
+      phone: phone.value,
+      email: email.value,
+    })
+    try {
+      const response = await sendDataToServer(data, url, token)
+      await fetchUsers()
+      launchToast()
+      showForm.value = false
+      console.log(response)
+    } catch (error) {
+      const failedValues = (await handleErrors(error as AxiosError<ErrorResult>))!
+      toastColor.value = 'rgb(228, 34, 34)'
+      toastTitle.value = failedValues.toastTitle
+      toastText.value = failedValues.toastText
+
+      await fetchUsers()
+      launchToast()
+
+      const resetValues = getInitialValues()
+      toastColor.value = resetValues.toastColor
+      toastTitle.value = resetValues.toastTitle
+      toastText.value = resetValues.toastText
+    }
   }
 </script>
 <template>
@@ -128,9 +203,10 @@
                   class="col-span-12 lg:col-span-6"
                   :visible-pages="3"
                   :pages="totalPages"
+                  color="info"
                 />
                 <va-card-content class="col-span-12 lg:col-span-6 flex justify-end pr-40">
-                  <va-button color="dark" @click="openForm">Agregar Usuario</va-button>
+                  <va-button color="info" @click="openForm">Agregar Usuario</va-button>
                 </va-card-content>
               </va-card-content>
             </va-card-content>
@@ -144,9 +220,15 @@
               <form>
                 <div class="grid grid-cols-12 gap-6">
                   <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-                    <va-input v-model="username" placeholder="Entrada de Texto" label="Nombre de usuario" clearable>
+                    <va-input
+                      v-model="username"
+                      placeholder="Entrada de Texto"
+                      color="info"
+                      label="Nombre de usuario"
+                      clearable
+                    >
                       <template #prepend>
-                        <va-icon color="gray" name="entypo-user" />
+                        <va-icon color="info" name="entypo-user" />
                       </template>
                     </va-input>
                   </div>
@@ -171,14 +253,14 @@
                   <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
                     <va-input v-model="phone" placeholder="Entrada de Texto" label="Telefono" clearable>
                       <template #prepend>
-                        <va-icon color="gray" name="phone" />
+                        <va-icon color="grey" name="phone" />
                       </template>
                     </va-input>
                   </div>
                   <div class="flex md:col-span-4 sm:col-span-6 col-span-12">
                     <va-input v-model="email" type="email" label="Correo Electrónico" clearable>
                       <template #prepend>
-                        <va-icon color="gray" name="email" />
+                        <va-icon color="grey" name="email" />
                       </template>
                     </va-input>
                   </div>
@@ -195,6 +277,13 @@
                     <va-date-input v-model="dateInput.simple" :label="'Fecha de creado'" manual-input clearable />
                   </div>
                 </div>
+
+                <va-card-content class="my-3 flex flex-wrap items-center gap-2 justify-end pr-40">
+                  <va-button color-presentation color="info" :variant="['gradient', 'hovered']" @click="sendData">
+                    guardar
+                  </va-button>
+                  <va-button color="danger" @click="openForm"> cancelar </va-button>
+                </va-card-content>
               </form>
             </va-card-content>
           </va-card>
@@ -206,9 +295,40 @@
     </template>
   </Suspense>
 </template>
-
 <style lang="scss" scoped>
   fieldset {
     margin-bottom: 0.5rem;
+  }
+  .toast-position-picker {
+    width: 112px;
+    height: 76px;
+  }
+
+  .position-boxes-row {
+    flex-direction: row;
+
+    &:first-child {
+      margin-bottom: 2px;
+    }
+  }
+
+  .position-box {
+    height: 36px;
+    width: 36px;
+    margin-right: 2px;
+    cursor: pointer;
+    opacity: 0.3;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &:hover {
+      opacity: 0.6;
+    }
+
+    &.selected {
+      opacity: 1;
+    }
   }
 </style>
