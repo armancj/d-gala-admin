@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref, watch } from 'vue'
+  import { computed, ref, UnwrapRef, watch } from 'vue'
   import axios, { AxiosError } from 'axios'
   import { loadUser } from '../../../stores/global-store'
   import { ErrorResult, handleErrors, Result, sendDataToServer } from '../../../util/ApiClient'
@@ -117,13 +117,18 @@
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const validateData = (data: unknown) => {
-    const nameAndLast = nameAndLastName.value.trim().split(' ', 2)
-
+  const validateData = (data: {
+    firstname: string
+    role: string
+    phone: string
+    email: string
+    lastname: string
+    username: string
+  }) => {
     const schema = z.object({
       username: z.string(),
       firstname: z.string(),
-      lastname: z.string(),
+      lastname: z.string().optional(),
       role: z.string(),
       phone: z.string(),
       email: z.string().email(),
@@ -132,11 +137,20 @@
     return schema.parse(data)
   }
 
+  const resetForm = () => {
+    nameAndLastName.value = ''
+    username.value = ''
+    phone.value = ''
+    email.value = ''
+  }
+
   const sendData = async () => {
+    const nameAndLast = nameAndLastName.value.trim().split(' ', 2)
     const data = validateData({
-      nameAndLastName: nameAndLastName.value,
+      firstname: nameAndLast[0],
+      lastname: nameAndLast[1],
       username: username.value,
-      rolesSelectModel: rolesSelectModel.value,
+      role: rolesSelectModel.value.label,
       phone: phone.value,
       email: email.value,
     })
@@ -145,6 +159,9 @@
       await fetchUsers()
       launchToast()
       showForm.value = false
+
+      resetForm()
+
       console.log(response)
     } catch (error) {
       const failedValues = (await handleErrors(error as AxiosError<ErrorResult>))!
