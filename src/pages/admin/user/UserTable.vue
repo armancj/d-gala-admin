@@ -1,10 +1,11 @@
 <script setup lang="ts">
-  import { computed, ref, UnwrapRef, watch } from 'vue'
+  import { computed, ref, watch } from 'vue'
   import axios, { AxiosError } from 'axios'
   import { loadUser } from '../../../stores/global-store'
   import { ErrorResult, handleErrors, Result, sendDataToServer } from '../../../util/ApiClient'
   import { ToastPosition, useToast } from 'vuestic-ui'
   import * as z from 'zod'
+  import UserProfile from './UserProfile.vue'
   const { init } = useToast()
 
   const url = '/api/rest/v1/users'
@@ -12,6 +13,7 @@
   const activePage = ref(1)
   const totalItems = ref(0)
   const showForm = ref(false)
+  const showProfile = ref(false)
   const username = ref('')
   const nameAndLastName = ref('')
   const phone = ref('')
@@ -61,6 +63,10 @@
   const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / itemsPerPage)))
   const openForm = () => {
     showForm.value = !showForm.value
+  }
+
+  const openProfile = () => {
+    showProfile.value = !showProfile.value
   }
 
   function getStatusColor(status: string) {
@@ -192,7 +198,7 @@
   <Suspense>
     <template #default>
       <div>
-        <div v-if="!showForm">
+        <div v-if="!showForm && !showProfile">
           <va-card>
             <va-card-title>Usuarios</va-card-title>
             <va-card-content class="overflow-auto">
@@ -222,20 +228,11 @@
                     </td>
                     <td>{{ user.createdAt }}</td>
                     <td>
-                      <va-popover
-                        :icon="popover.icon.icon"
-                        color="info"
-                        :title="popover.title"
-                        message="algo"
-                        placement="right"
-                        open
-                      >
-                        <va-button-group class="flex col-span-2 xl:col-span-12 justify-end" preset="plain" color="gray">
-                          <va-button color="info" icon="material-icons-person" @click="openForm"></va-button>
-                          <va-button color="dark" icon="material-icons-mode_edit"></va-button>
-                          <va-button color="danger" icon="material-icons-remove_circle"></va-button>
-                        </va-button-group>
-                      </va-popover>
+                      <va-button-group class="flex col-span-2 xl:col-span-12 justify-end" preset="plain" color="gray">
+                        <va-button color="info" icon="material-icons-person" @click="openProfile"></va-button>
+                        <va-button color="dark" icon="material-icons-mode_edit"></va-button>
+                        <va-button color="danger" icon="material-icons-remove_circle"></va-button>
+                      </va-button-group>
                     </td>
                   </tr>
                 </tbody>
@@ -254,6 +251,10 @@
               </va-card-content>
             </va-card-content>
           </va-card>
+        </div>
+
+        <div v-if="showProfile">
+          <UserProfile />
         </div>
 
         <div v-if="showForm">
@@ -320,7 +321,6 @@
                     <va-date-input v-model="dateInput.simple" :label="'Fecha de creado'" manual-input clearable />
                   </div>
                 </div>
-
                 <va-card-content class="my-3 flex flex-wrap items-center gap-2 justify-end pr-40">
                   <va-button color-presentation color="info" :variant="['gradient', 'hovered']" @click="sendData">
                     guardar

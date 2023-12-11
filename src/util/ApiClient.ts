@@ -28,6 +28,23 @@ export interface Result {
   status: string
 }
 
+export interface DataAll<T> {
+  result: T[]
+  total: number
+}
+
+export interface userResult {
+  id: number
+  createdAt: Date
+  email: string
+  username: string
+  firstname: string
+  lastname: string
+  phone: string
+  role: string
+  status: string
+}
+
 export interface LoginResponse {
   payload: Payload
   access_token: string
@@ -45,6 +62,18 @@ export interface Payload {
   role: string
   status: string
   updatedAt: Date
+}
+
+export interface Result {
+  id: number
+  createdAt: Date
+  email: string
+  username: string
+  firstname: string
+  lastname: string
+  phone: string
+  role: string
+  status: string
 }
 
 export async function makeRequest<T>(url: string, data?: any) {
