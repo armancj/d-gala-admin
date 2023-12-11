@@ -178,6 +178,15 @@
       toastText.value = resetValues.toastText
     }
   }
+  const popover = ref({
+    title: 'Hey folks!',
+    message: 'This tooltip is amazing :D',
+    icon: {
+      icon: 'person',
+      text: 'print',
+    },
+    color: 'info',
+  })
 </script>
 <template>
   <Suspense>
@@ -197,6 +206,7 @@
                     <th>Rol de Usuario</th>
                     <th>Estado</th>
                     <th>Fecha de creado</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
 
@@ -211,6 +221,22 @@
                       <va-badge :text="user.status" :color="getStatusColor(user.status)" />
                     </td>
                     <td>{{ user.createdAt }}</td>
+                    <td>
+                      <va-popover
+                        :icon="popover.icon.icon"
+                        color="info"
+                        :title="popover.title"
+                        message="algo"
+                        placement="right"
+                        open
+                      >
+                        <va-button-group class="flex col-span-2 xl:col-span-12 justify-end" preset="plain" color="gray">
+                          <va-button color="info" icon="material-icons-person" @click="openForm"></va-button>
+                          <va-button color="dark" icon="material-icons-mode_edit"></va-button>
+                          <va-button color="danger" icon="material-icons-remove_circle"></va-button>
+                        </va-button-group>
+                      </va-popover>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -223,7 +249,7 @@
                   color="info"
                 />
                 <va-card-content class="col-span-12 lg:col-span-6 flex justify-end pr-40">
-                  <va-button color="info" @click="openForm">Agregar Usuario</va-button>
+                  <va-button color="info" icon="material-icons-person_add" @click="openForm">Agregar Usuario</va-button>
                 </va-card-content>
               </va-card-content>
             </va-card-content>

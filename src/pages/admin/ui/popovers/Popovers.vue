@@ -84,6 +84,6 @@
       icon: 'print',
       text: 'print',
     },
-    color: 'warning',
+    color: 'info',
   })
 </script>
