@@ -139,3 +139,22 @@ export const handleErrors = async (error: AxiosError<ErrorResult>) => {
     toastText: `${error}- code: ${errorData?.statusCode}`,
   }
 }
+
+export async function getResponseAllUser(token: string, url: string, skip?: number, itemsPerPage?: number) {
+  return (
+    await axios.get(import.meta.env.VITE_BASE_URL + `${url}?skip=${skip}&take=${itemsPerPage}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data
+}
+export async function deleteResponseUser(token: string, url: string) {
+  return (
+    await axios.delete(import.meta.env.VITE_BASE_URL + `${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data
+}
