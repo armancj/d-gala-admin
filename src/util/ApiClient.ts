@@ -158,3 +158,13 @@ export async function deleteResponseUser(token: string, url: string) {
     })
   ).data
 }
+
+export async function findOneResponseUser(token: string, url: string) {
+  return (
+    await axios.get(import.meta.env.VITE_BASE_URL + `${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data
+}

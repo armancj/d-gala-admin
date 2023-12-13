@@ -1,18 +1,19 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
   import { loadUser } from '../../../stores/global-store'
-  import { deleteResponseUser, getResponseAllUser, Result } from '../../../util/ApiClient'
+  import { deleteResponseUser, findOneResponseUser, getResponseAllUser, Result } from '../../../util/ApiClient'
   import UserRegister from './UserRegister.vue'
+  import UserProfile from './UserProfile.vue'
 
   const users = ref<Result[]>([])
   const activePage = ref(1)
   const totalItems = ref(0)
   const showForm = ref(false)
   const showProfile = ref(false)
+  const showEdit = ref(false)
   const showBlurredModal = ref(false)
   const userIdToDelete = ref(null)
-  const selectedUser = ref(null)
-  const customHeaderAccordionValue = ref([false, false])
+  const findOneUser = ref(null)
 
   const url = '/api/rest/v1/users'
 
@@ -23,7 +24,12 @@
     showForm.value = !showForm.value
   }
 
-  const openProfile = () => {
+  const openProfile = async (id: number) => {
+    const urlOne = `${url}/${id}`
+    findOneUser.value = (await findOneResponseUser(token, urlOne)).data
+    showProfile.value = !showProfile.value
+  }
+  const closeProfile = () => {
     showProfile.value = !showProfile.value
   }
 
@@ -43,6 +49,7 @@
       users.value = response.data.result
       totalItems.value = response.data.total
     } catch (error) {
+      console.log('here')
       console.error(error)
     }
   }
@@ -73,7 +80,7 @@
   <Suspense>
     <template #default>
       <div>
-        <div v-if="!showForm && !showProfile">
+        <div v-if="!showForm && !showProfile && !showEdit">
           <va-card>
             <va-card-title>Usuarios</va-card-title>
             <va-card-content class="overflow-auto">
@@ -103,8 +110,8 @@
                     </td>
                     <td>{{ user.createdAt }}</td>
                     <td>
-                      <va-button-group class="flex col-span-2 xl:col-span-12 justify-end" preset="plain" color="gray">
-                        <va-button color="info" icon="material-icons-person"></va-button>
+                      <va-button-group preset="plain" color="gray">
+                        <va-button color="info" icon="material-icons-person" @click="openProfile(user.id)"></va-button>
                         <va-button color="dark" icon="material-icons-mode_edit"></va-button>
                         <va-button color="danger" icon="material-icons-remove_circle" @click="deleteUser(user.id)">
                           <va-modal
@@ -123,6 +130,7 @@
                   </tr>
                 </tbody>
               </table>
+
               <va-card-content class="flex items-center justify-between grid-cols-12 gap-5">
                 <va-pagination
                   v-model="activePage"
@@ -140,6 +148,12 @@
         </div>
 
         <UserRegister :show-form="showForm" :open-form="openForm" :fetch-users="fetchUsers" />
+        <UserProfile
+          :open-profile="openProfile"
+          :close-profile="closeProfile"
+          :show-profile="showProfile"
+          :user-data="findOneUser"
+        />
       </div>
     </template>
     <template #fallback>
