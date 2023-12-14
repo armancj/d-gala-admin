@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, defineProps } from 'vue'
+  import { ref } from 'vue'
   import { ToastPosition, useToast } from 'vuestic-ui'
   import * as z from 'zod'
   import { ErrorResult, handleErrors, sendDataToServer } from '../../../util/ApiClient'

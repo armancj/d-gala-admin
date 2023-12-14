@@ -113,6 +113,19 @@ export async function sendDataToServer<T>(data: T, url: string, token?: string) 
     })
 }
 
+export async function sendUpdateDataToServer<T>(data: T, url: string, token?: string) {
+  return await axios
+    .patch<T>(import.meta.env.VITE_BASE_URL + url, JSON.stringify(data), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    .catch((err) => {
+      throw err
+    })
+}
+
 export const handleErrors = async (error: AxiosError<ErrorResult>) => {
   const errorData = error?.response?.data
 

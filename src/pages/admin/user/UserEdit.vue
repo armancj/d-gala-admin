@@ -1,18 +1,12 @@
 <script setup lang="ts">
-  import { ref, defineProps } from 'vue'
+  import { computed, ref, watchEffect } from 'vue'
   import { ToastPosition, useToast } from 'vuestic-ui'
   import * as z from 'zod'
-  import { ErrorResult, handleErrors, sendDataToServer } from '../../../util/ApiClient'
+  import { ErrorResult, handleErrors, Result, sendUpdateDataToServer } from '../../../util/ApiClient'
   import { loadUser } from '../../../stores/global-store'
   import { AxiosError } from 'axios'
 
   const { init } = useToast()
-
-  const url = '/api/rest/v1/users'
-  const username = ref('')
-  const nameAndLastName = ref('')
-  const phone = ref('')
-
   const props = defineProps({
     showForm: {
       type: Boolean,
@@ -22,11 +16,31 @@
       type: Function,
       required: true,
     },
+    closeProfile: {
+      type: Function,
+      required: true,
+    },
+    userData: {
+      type: Object,
+      required: true,
+    },
     fetchUsers: {
       type: Function,
       required: true,
     },
   })
+  const user = computed(() => ({
+    username: props.userData.username,
+    firstname: props.userData.firstname,
+    lastname: props.userData.lastname,
+    email: props.userData.email,
+    role: props.userData.role,
+    status: props.userData.status,
+    id: props.userData.id,
+  }))
+
+  const username = ref(user.value.username)
+  const nameAndLastName = ref(user.value.firstname + ' ' + user.value.lastname)
 
   const toastDuration = ref(3000)
   const toastPosition = ref<ToastPosition>('bottom-right')
@@ -35,16 +49,16 @@
     return {
       toastColor: 'rgb(21, 141, 227)',
       toastTitle: 'Accion Ejecutada',
-      toastText: 'Usuario guardado en el servidor correctamente',
+      toastText: 'Usuario actualizado en el servidor correctamente',
     }
   }
 
   const status = ref([
-    { label: 'ACTIVATED', description: 'Usuario activado' },
-    { label: 'DEACTIVATED', description: 'Usuario desactivado' },
+    { label: 'ACTIVE', description: 'Usuario activado' },
+    { label: 'DEACTIVE', description: 'Usuario desactivado' },
   ])
 
-  const statusSelectModel = ref(status.value[0])
+  const statusSelectModel = status.value.find((s) => s.label === user.value.status)
 
   const initialValues = getInitialValues()
   const toastColor = ref(initialValues.toastColor)
@@ -62,47 +76,25 @@
     })
   }
 
-  const email = ref('')
+  const email = ref(user.value.email)
 
   const validateData = (data: {
-    firstname: string
-    role: string
-    phone: string
-    email: string
-    lastname: string
-    username: string
+    firstname?: string
+    role?: string
+    email?: string
+    lastname?: string
+    username?: string
   }) => {
     const schema = z.object({
-      username: z.string(),
-      firstname: z.string(),
+      username: z.string().optional(),
+      firstname: z.string().optional(),
       lastname: z.string().optional(),
-      role: z.string(),
-      phone: z.string(),
-      email: z.string().email(),
+      role: z.string().optional(),
+      email: z.string().email().optional(),
     })
 
     return schema.parse(data)
   }
-
-  const resetForm = () => {
-    nameAndLastName.value = ''
-    username.value = ''
-    phone.value = ''
-    email.value = ''
-  }
-
-  const datePlusDay = (date: Date, days: number) => {
-    const d = new Date(date)
-    d.setDate(d.getDate() + days)
-    return d
-  }
-
-  const dateInput = ref({
-    simple: new Date(),
-    disabled: '2018-05-09',
-    range: { start: new Date(), end: datePlusDay(new Date(), 7) },
-    multiple: ['2018-04-25', '2018-04-27'],
-  })
 
   const roles = ref([
     { label: 'USER', description: 'Cliente' },
@@ -110,7 +102,7 @@
     { label: 'ADMIN', description: 'Administrador' },
   ])
 
-  const rolesSelectModel = ref(roles.value[0])
+  const rolesSelectModel = roles.value.find((role) => role.label === user.value.role)!
 
   const token = loadUser().access_token
   const sendData = async () => {
@@ -119,17 +111,15 @@
       firstname: nameAndLast[0],
       lastname: nameAndLast[1],
       username: username.value,
-      role: rolesSelectModel.value.label,
-      phone: phone.value,
-      email: email.value,
+      role: rolesSelectModel.label,
+      //email: email.value,
     })
+    const url = '/api/rest/v1/users/' + user.value.id
     try {
-      const response = await sendDataToServer(data, url, token)
+      const response = await sendUpdateDataToServer(data, url, token)
       await props.fetchUsers()
       launchToast()
-      props.openForm()
-
-      resetForm()
+      props.closeProfile()
 
       console.log(response)
     } catch (error) {
@@ -182,13 +172,6 @@
                 :options="roles"
               />
             </div>
-            <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-              <va-input v-model="phone" placeholder="Entrada de Texto" label="Telefono" clearable>
-                <template #prepend>
-                  <va-icon color="grey" name="phone" />
-                </template>
-              </va-input>
-            </div>
             <div class="flex md:col-span-4 sm:col-span-6 col-span-12">
               <va-input v-model="email" type="email" label="Correo Electrónico" clearable>
                 <template #prepend>
@@ -205,15 +188,12 @@
                 :options="status"
               />
             </div>
-            <div class="flex md:col-span-2 sm:col-span-3 col-span-12">
-              <va-date-input v-model="dateInput.simple" :label="'Fecha de creado'" manual-input clearable />
-            </div>
           </div>
           <va-card-content class="my-3 flex flex-wrap items-center gap-2 justify-end pr-40">
             <va-button color-presentation color="info" :variant="['gradient', 'hovered']" @click="sendData">
               guardar
             </va-button>
-            <va-button color="danger" @click="openForm"> cancelar </va-button>
+            <va-button color="danger" @click="closeProfile"> cancelar </va-button>
           </va-card-content>
         </form>
       </va-card-content>

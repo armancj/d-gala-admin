@@ -21,6 +21,8 @@
     },
   })
 
+  const showAnchorModal = ref(true)
+
   const customers = ref(data.slice(0, 5))
 
   const user = computed(() => ({
@@ -61,29 +63,44 @@
 </script>
 
 <template>
-  <div v-if="showProfile" class="profile-container">
-    <va-card>
-      <va-card-title>Perfil de Usuario</va-card-title>
-      <va-card-content>
+  <div v-if="showProfile" class="cards">
+    <va-card class="col-span-12 sm:col-span-6 md:col-span-6 p-4" stripe stripe-color="info">
+      <va-card-title class="text-l font-bold" text-color="dark">Perfil de Usuario</va-card-title>
+      <va-content anchor-class="inline-flex">
         <div class="flex items-center justify-between">
           <div class="profile-content">
             <va-avatar>
               <img :src="customers[0].picture" :alt="customers[0].name" />
             </va-avatar>
-            <h2>{{ user.username }}</h2>
-            <p>Nombre: {{ user.firstname }}</p>
-            <p>Apellido: {{ user.lastname }}</p>
-            <p>Email: {{ user.email }}</p>
-            <p>Teléfono: {{ user.phone }}</p>
-            <p>Rol: <va-badge :text="getRoles(user.role)" color="info" /></p>
-            <p>Estado: <va-badge :text="user.status" color="getStatusColor(user.status)" /></p>
-            <p>Fecha de creación: {{ user.createdAt }}</p>
+            <h2 class="text-xl font-bold mb-2">Datos</h2>
+            <p class="text-xl font-bold mb-2">
+              Nombre de usuario: <span class="font-normal text-black">{{ user.username }}</span>
+            </p>
+            <p class="text-xl font-bold mb-2">
+              Nombre: <span class="font-normal text-black">{{ user.firstname }}</span>
+            </p>
+            <p class="text-xl font-bold mb-2">
+              Apellido: <span class="font-normal text-black">{{ user.lastname }}</span>
+            </p>
+            <p class="text-xl font-bold mb-2">
+              Correo Electrónico: <span class="font-normal text-black">{{ user.email }}</span>
+            </p>
+            <p class="text-xl font-bold mb-2">
+              Teléfono: <span class="font-normal text-black">{{ user.phone }}</span>
+            </p>
+            <p class="text-xl font-bold mb-2">Rol: <va-badge :text="getRoles(user.role)" color="info" /></p>
+            <p class="text-xl font-bold mb-2">
+              Estado: <va-badge :text="user.status" color="getStatusColor(user.status)" />
+            </p>
+            <p class="text-xl font-bold mb-2">
+              Fecha de creación: <span class="font-normal text-black">{{ user.createdAt }}</span>
+            </p>
           </div>
           <va-button class="self-end profile-button" color="info" icon="material-icons-arrow_back" @click="closeProfile"
             >Regresar</va-button
           >
         </div>
-      </va-card-content>
+      </va-content>
     </va-card>
   </div>
 </template>

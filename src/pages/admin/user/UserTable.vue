@@ -4,6 +4,8 @@
   import { deleteResponseUser, findOneResponseUser, getResponseAllUser, Result } from '../../../util/ApiClient'
   import UserRegister from './UserRegister.vue'
   import UserProfile from './UserProfile.vue'
+  import UserEdit from './UserEdit.vue'
+  import data from '../ui/lists/data.json'
 
   const users = ref<Result[]>([])
   const activePage = ref(1)
@@ -17,6 +19,8 @@
 
   const url = '/api/rest/v1/users'
 
+  const customers = ref(data.slice(0, 5))
+
   const itemsPerPage = 10
 
   const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / itemsPerPage)))
@@ -29,15 +33,25 @@
     findOneUser.value = (await findOneResponseUser(token, urlOne)).data
     showProfile.value = !showProfile.value
   }
+
+  const openEditProfile = async (id: number) => {
+    const urlOne = `${url}/${id}`
+    findOneUser.value = (await findOneResponseUser(token, urlOne)).data
+    showEdit.value = !showEdit.value
+  }
   const closeProfile = () => {
     showProfile.value = !showProfile.value
+  }
+  const closeEditProfile = () => {
+    showEdit.value = !showEdit.value
+    findOneUser.value = null
   }
 
   function getStatusColor(status: string) {
     if (status === 'ACTIVE') {
-      return 'info'
+      return { color: 'info', name: 'Activado' }
     }
-    return 'danger'
+    return { color: 'danger', name: 'Desactivado' }
   }
 
   const token = loadUser().access_token
@@ -100,19 +114,31 @@
 
                 <tbody>
                   <tr v-for="user in users" :key="user.id">
-                    <td>{{ user.username }}</td>
+                    <td>
+                      <va-avatar>
+                        <img
+                          src="https://th.bing.com/th/id/R.e983f81e31dbbde3e9f982c4f78bdc45?rik=Q30BYccxkPEFFg&pid=ImgRaw&r=0"
+                          :alt="customers[0].name"
+                        />
+                      </va-avatar>
+                      <span class="ml-2">{{ user.username }}</span>
+                    </td>
                     <td>{{ user.firstname }} {{ user.lastname }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.phone }}</td>
                     <td>{{ user.role }}</td>
                     <td>
-                      <va-badge :text="user.status" :color="getStatusColor(user.status)" />
+                      <va-badge :text="getStatusColor(user.status).name" :color="getStatusColor(user.status).color" />
                     </td>
                     <td>{{ user.createdAt }}</td>
                     <td>
                       <va-button-group preset="plain" color="gray">
                         <va-button color="info" icon="material-icons-person" @click="openProfile(user.id)"></va-button>
-                        <va-button color="dark" icon="material-icons-mode_edit"></va-button>
+                        <va-button
+                          color="dark"
+                          icon="material-icons-mode_edit"
+                          @click="openEditProfile(user.id)"
+                        ></va-button>
                         <va-button color="danger" icon="material-icons-remove_circle" @click="deleteUser(user.id)">
                           <va-modal
                             v-model="showBlurredModal"
@@ -148,6 +174,14 @@
         </div>
 
         <UserRegister :show-form="showForm" :open-form="openForm" :fetch-users="fetchUsers" />
+        <UserEdit
+          v-if="findOneUser"
+          :show-form="showEdit"
+          :open-form="openEditProfile"
+          :close-profile="closeEditProfile"
+          :fetch-users="fetchUsers"
+          :user-data="findOneUser"
+        />
         <UserProfile
           :open-profile="openProfile"
           :close-profile="closeProfile"

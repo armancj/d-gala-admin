@@ -6,6 +6,7 @@ import Page404Layout from '../layouts/Page404Layout.vue'
 
 import RouteViewComponent from '../layouts/RouterBypass.vue'
 import UIRoute from '../pages/admin/ui/route'
+import { loadUser } from '../stores/global-store'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -224,6 +225,16 @@ const router = createRouter({
     }
   },
   routes,
+})
+
+router.beforeEach(async (to) => {
+  const publicPages = ['/auth/login', '/auth/signup', '/auth/recover-password']
+  const authRequired = !publicPages.includes(to.path)
+  const auth = loadUser()?.access_token
+
+  if (authRequired && !auth) {
+    return { name: 'login' }
+  }
 })
 
 export default router
