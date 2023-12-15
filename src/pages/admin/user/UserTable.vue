@@ -47,6 +47,19 @@
     findOneUser.value = null
   }
 
+  const getRoles = (status: string) => {
+    switch (status) {
+      case 'SUADMIN':
+        return 'Super Administrador'
+      case 'ADMIN':
+        return 'Administrador'
+      case 'WORKED':
+        return 'Trabajador'
+      default:
+        return 'Cliente'
+    }
+  }
+
   function getStatusColor(status: string) {
     if (status === 'ACTIVE') {
       return { color: 'info', name: 'Activado' }
@@ -60,7 +73,7 @@
 
     try {
       const response = await getResponseAllUser(token, url, skip, itemsPerPage)
-      users.value = response.data.result
+      users.value = response.data.result?.filter((user: Result) => !(user.role === 'SUADMIN')) || []
       totalItems.value = response.data.total
     } catch (error) {
       console.log('here')
@@ -101,6 +114,7 @@
               <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
                 <thead>
                   <tr>
+                    <th></th>
                     <th>Nombre de usuario</th>
                     <th>Nombre y Apellidos</th>
                     <th>Correo</th>
@@ -121,12 +135,12 @@
                           :alt="customers[0].name"
                         />
                       </va-avatar>
-                      <span class="ml-2">{{ user.username }}</span>
                     </td>
+                    <td>{{ user.username }}</td>
                     <td>{{ user.firstname }} {{ user.lastname }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.phone }}</td>
-                    <td>{{ user.role }}</td>
+                    <td>{{ getRoles(user.role) }}</td>
                     <td>
                       <va-badge :text="getStatusColor(user.status).name" :color="getStatusColor(user.status).color" />
                     </td>

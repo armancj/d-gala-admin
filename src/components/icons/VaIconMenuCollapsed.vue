@@ -1,5 +1,11 @@
 <template>
-  <svg class="va-icon-menu-collapsed" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <svg
+    class="va-icon-menu-collapsed mover-derecha"
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+  >
     <g fill="none" fill-rule="nonzero">
       <path d="M0 0h24v24H0z" />
       <rect width="20" height="2" x="2" y="3" :fill="color" rx="1" />
@@ -28,5 +34,8 @@
     display: inline-block;
     width: 24px;
     height: 24px;
+  }
+  .mover-derecha {
+    margin-left: 20px;
   }
 </style>

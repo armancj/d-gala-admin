@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { computed, ref, watchEffect } from 'vue'
+  import { computed, ref } from 'vue'
   import { ToastPosition, useToast } from 'vuestic-ui'
   import * as z from 'zod'
-  import { ErrorResult, handleErrors, Result, sendUpdateDataToServer } from '../../../util/ApiClient'
+  import { ErrorResult, handleErrors, sendUpdateDataToServer } from '../../../util/ApiClient'
   import { loadUser } from '../../../stores/global-store'
   import { AxiosError } from 'axios'
 
@@ -58,7 +58,7 @@
     { label: 'DEACTIVE', description: 'Usuario desactivado' },
   ])
 
-  const statusSelectModel = status.value.find((s) => s.label === user.value.status)
+  const statusSelectModel = ref(status.value.find((s) => s.label === user.value.status)!)
 
   const initialValues = getInitialValues()
   const toastColor = ref(initialValues.toastColor)
@@ -84,6 +84,7 @@
     email?: string
     lastname?: string
     username?: string
+    status?: string
   }) => {
     const schema = z.object({
       username: z.string().optional(),
@@ -91,6 +92,7 @@
       lastname: z.string().optional(),
       role: z.string().optional(),
       email: z.string().email().optional(),
+      status: z.string().optional(),
     })
 
     return schema.parse(data)
@@ -102,7 +104,7 @@
     { label: 'ADMIN', description: 'Administrador' },
   ])
 
-  const rolesSelectModel = roles.value.find((role) => role.label === user.value.role)!
+  const rolesSelectModel = ref(roles.value.find((role) => role.label === user.value.role)!)
 
   const token = loadUser().access_token
   const sendData = async () => {
@@ -111,8 +113,8 @@
       firstname: nameAndLast[0],
       lastname: nameAndLast[1],
       username: username.value,
-      role: rolesSelectModel.label,
-      //email: email.value,
+      role: rolesSelectModel.value.label,
+      status: statusSelectModel.value.label,
     })
     const url = '/api/rest/v1/users/' + user.value.id
     try {
