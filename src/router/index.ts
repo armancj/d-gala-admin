@@ -152,6 +152,11 @@ const routes: Array<RouteRecordRaw> = [
       },
       UIRoute,
       {
+        name: 'category',
+        path: 'category',
+        component: () => import('../pages/admin/category/CategoryTable.vue'),
+      },
+      {
         name: 'user',
         path: 'user',
         component: () => import('../pages/admin/user/UserTable.vue'),

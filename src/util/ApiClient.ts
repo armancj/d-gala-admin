@@ -4,6 +4,27 @@ export interface Data<T> {
   data: T
 }
 
+export interface Categories {
+  data: CategoriesData
+}
+
+export interface CategoriesData {
+  result: CategoriesResult[]
+  count: number
+  total: number
+}
+
+export interface CategoriesResult {
+  id: number
+  createdAt: Date
+  name: string
+  generalCategory: boolean
+  parentId: null
+  userId: number
+  deleted: boolean
+  updatedAt: Date
+}
+
 export interface DataClass {
   result: Result[]
   total: number
@@ -126,7 +147,7 @@ export async function sendUpdateDataToServer<T>(data: T, url: string, token?: st
     })
 }
 
-export const handleErrors = async (error: AxiosError<ErrorResult>) => {
+export const handleErrors = async (error: AxiosError<ErrorResult>, message?: string) => {
   const errorData = error?.response?.data
 
   if (errorData?.statusCode === 400)
@@ -138,7 +159,7 @@ export const handleErrors = async (error: AxiosError<ErrorResult>) => {
   if (errorData?.statusCode === 409)
     return {
       toastTitle: 'Conflicto en el Sistema',
-      toastText: 'El nombre de  usuario, el correo o el teléfono están en el sistema.',
+      toastText: !message ? 'El nombre de  usuario, el correo o el teléfono están en el sistema.' : message,
     }
 
   if (errorData?.statusCode === 500)
@@ -153,7 +174,7 @@ export const handleErrors = async (error: AxiosError<ErrorResult>) => {
   }
 }
 
-export async function getResponseAllUser(token: string, url: string, skip?: number, itemsPerPage?: number) {
+export async function getResponseAll(token: string, url: string, skip?: number, itemsPerPage?: number) {
   return (
     await axios.get(import.meta.env.VITE_BASE_URL + `${url}?skip=${skip}&take=${itemsPerPage}`, {
       headers: {
@@ -172,7 +193,7 @@ export async function deleteResponseUser(token: string, url: string) {
   ).data
 }
 
-export async function findOneResponseUser(token: string, url: string) {
+export async function findOneResponse(token: string, url: string) {
   return (
     await axios.get(import.meta.env.VITE_BASE_URL + `${url}`, {
       headers: {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
   import { loadUser } from '../../../stores/global-store'
-  import { deleteResponseUser, findOneResponseUser, getResponseAllUser, Result } from '../../../util/ApiClient'
+  import { deleteResponseUser, findOneResponse, getResponseAll, Result } from '../../../util/ApiClient'
   import UserRegister from './UserRegister.vue'
   import UserProfile from './UserProfile.vue'
   import UserEdit from './UserEdit.vue'
@@ -30,13 +30,13 @@
 
   const openProfile = async (id: number) => {
     const urlOne = `${url}/${id}`
-    findOneUser.value = (await findOneResponseUser(token, urlOne)).data
+    findOneUser.value = (await findOneResponse(token, urlOne)).data
     showProfile.value = !showProfile.value
   }
 
   const openEditProfile = async (id: number) => {
     const urlOne = `${url}/${id}`
-    findOneUser.value = (await findOneResponseUser(token, urlOne)).data
+    findOneUser.value = (await findOneResponse(token, urlOne)).data
     showEdit.value = !showEdit.value
   }
   const closeProfile = () => {
@@ -72,7 +72,7 @@
     const skip = (activePage.value - 1) * itemsPerPage
 
     try {
-      const response = await getResponseAllUser(token, url, skip, itemsPerPage)
+      const response = await getResponseAll(token, url, skip, itemsPerPage)
       users.value = response.data.result?.filter((user: Result) => !(user.role === 'SUADMIN')) || []
       totalItems.value = response.data.total
     } catch (error) {

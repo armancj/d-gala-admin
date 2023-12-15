@@ -5,7 +5,7 @@
       class="mb-4"
       type="email"
       :label="t('auth.email')"
-      :error="!!emailErrors.length"
+      :error="!emailErrors.length"
       :error-messages="emailErrors"
     />
 

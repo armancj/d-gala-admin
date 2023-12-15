@@ -3,7 +3,7 @@
     <template #left>
       <div class="left">
         <va-icon-menu-collapsed
-          :class="{ 'x-flip': isSidebarMinimized }"
+          :class="{ 'x-flip': isSidebarMinimized, 'cursor-pointer': true }"
           class="va-navbar__item"
           :color="colors.primary"
           @click="isSidebarMinimized = !isSidebarMinimized"
@@ -105,5 +105,8 @@
         display: none;
       }
     }
+  }
+  .cursor-pointer {
+    cursor: pointer;
   }
 </style>

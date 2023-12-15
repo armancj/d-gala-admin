@@ -206,6 +206,14 @@ export default {
       disabled: true,
     },
     {
+      name: 'category',
+      displayName: 'listar Categorías',
+      meta: {
+        icon: 'vuestic-iconset-ui-elements',
+      },
+      disabled: true,
+    },
+    {
       name: 'pages',
       displayName: 'menu.pages',
       meta: {

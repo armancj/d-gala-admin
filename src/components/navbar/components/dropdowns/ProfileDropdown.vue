@@ -16,33 +16,63 @@
         </va-list-item>
       </va-dropdown-content>
     </va-dropdown>
-    <va-modal v-model:active="showModal">
-      <div v-if="userProfile">
-        <h2>{{ (userProfile as Payload).email }}</h2>
-        <p>{{ (userProfile as Payload).role }}</p>
-      </div>
+
+    <va-modal v-model="showModal" blur>
+      <va-content anchor-class="inline-flex">
+        <div class="flex items-center justify-between">
+          <div class="profile-content">
+            <va-avatar>
+              <img :src="customers[2].picture" :alt="customers[2].name" />
+            </va-avatar>
+            <h2 class="text-xl font-bold mb-2">Mi Perfil</h2>
+            <p class="text-xl font-bold mb-2">
+              Nombre de usuario: <span>{{ userData.username }}</span>
+            </p>
+            <p class="text-xl font-bold mb-2">
+              Nombre: <span>{{ userData.firstname }}</span>
+            </p>
+            <p class="text-xl font-bold mb-2">
+              Apellido: <span>{{ userData.lastname }}</span>
+            </p>
+            <p class="text-xl font-bold mb-2">
+              Correo Electrónico: <span>{{ userData.email }}</span>
+            </p>
+            <p class="text-xl font-bold mb-2">
+              Teléfono: <span>{{ userData.phone }}</span>
+            </p>
+          </div>
+        </div>
+      </va-content>
     </va-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, UnwrapRef } from 'vue'
+  import { ref } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useColors } from 'vuestic-ui'
   import axios from 'axios'
   import { loadUser } from '../../../../stores/global-store'
-  import { Data, Payload } from '../../../../util/ApiClient'
-  import { Ref } from '@vue/reactivity'
+  import { Payload } from '../../../../util/ApiClient'
+  import data from '../../../../pages/admin/ui/lists/data.json'
+
+  const customers = ref(data.slice(0, 5))
 
   const { t } = useI18n()
   const { colors } = useColors()
   const showModal = ref(false)
   const isShown = ref(false)
+  const showLargeModal = ref(true)
 
-  const userProfile: Ref<UnwrapRef<null>> = ref(null)
+  const userProfile = ref(null)
+
+  const userData = ref(loadUser().payload)
+
+  const changeShowModal = () => {
+    showModal.value = !showModal.value
+  }
 
   const loadUserProfile = async () => {
-    showModal.value = true
     const user = loadUser()
     try {
       const response = await axios
@@ -54,38 +84,17 @@
         .then((res) => {
           return res.data
         })
-      console.log(showModal.value)
       userProfile.value = response.data
+      showModal.value = true
     } catch (error) {
       console.error('Error al cargar el perfil del usuario:', error)
     }
   }
 
-  const logout = async () => {
-    try {
-      await axios.post('/api/logout') // Asume que '/api/logout' es la ruta de tu API que maneja el cierre de sesión
-    } catch (error) {
-      console.error('Error al cerrar la sesión:', error)
-    }
+  const logout = () => {
+    localStorage.clear()
+    window.location.href = 'auth/login'
   }
-
-  /*withDefaults(
-    defineProps<{
-      options?: { name: string; redirectTo: string }[]
-    }>(),
-    {
-      options: () => [
-        {
-          name: 'profile',
-          redirectTo: '',
-        },
-        {
-          name: 'logout',
-          redirectTo: 'login',
-        },
-      ],
-    },
-  )*/
 </script>
 
 <style lang="scss" scoped>
@@ -105,5 +114,8 @@
         color: var(--va-primary);
       }
     }
+  }
+  .p-2 {
+    cursor: pointer;
   }
 </style>

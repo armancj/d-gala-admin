@@ -70,7 +70,7 @@
         <div class="flex items-center justify-between">
           <div class="profile-content">
             <va-avatar>
-              <img :src="customers[0].picture" :alt="customers[0].name" />
+              <img :src="customers[2].picture" :alt="customers[2].name" />
             </va-avatar>
             <h2 class="text-xl font-bold mb-2">Datos</h2>
             <p class="text-xl font-bold mb-2">
