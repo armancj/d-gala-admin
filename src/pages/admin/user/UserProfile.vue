@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
   import data from '../ui/lists/data.json'
+  import { formatDate } from '../../../util/ApiClient'
 
   const props = defineProps({
     openProfile: {
@@ -94,7 +95,7 @@
               Estado: <va-badge :text="user.status" color="getStatusColor(user.status)" />
             </p>
             <p class="text-xl font-bold mb-2">
-              Fecha de creación: <span class="font-normal text-black">{{ user.createdAt }}</span>
+              Fecha de creación: <span class="font-normal text-black">{{ formatDate(user.createdAt) }}</span>
             </p>
           </div>
           <va-button class="self-end profile-button" color="info" icon="material-icons-arrow_back" @click="closeProfile"

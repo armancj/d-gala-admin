@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
   import { loadUser } from '../../../stores/global-store'
-  import { deleteResponseUser, findOneResponse, getResponseAll, Product } from '../../../util/ApiClient'
+  import { deleteResponseUser, findOneResponse, formatDate, getResponseAll, Product } from '../../../util/ApiClient'
 
   const products = ref<Product[]>([])
   const activePage = ref(1)
@@ -50,6 +50,7 @@
   }
 
   function getStatusColor(status: string) {
+    console.log(status)
     if (status === 'IN_SUPPLIER') {
       return { color: 'success', name: 'Suplido' }
     }
@@ -67,6 +68,7 @@
       const response = await getResponseAll(token, url, skip, itemsPerPage)
       products.value = response.data.result
       totalItems.value = response.data.total
+      console.log(response.data.result)
     } catch (error) {
       console.log('here')
       console.error(error)
@@ -101,23 +103,24 @@
       <div>
         <div v-if="!showForm && !showEdit">
           <va-card>
-            <va-card-title>Usuarios</va-card-title>
+            <va-card-title>Producto</va-card-title>
             <va-card-content class="overflow-auto">
               <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
                 <thead>
                   <tr>
-                    <th>Nombre del producto</th>
-                    <th>Género del producto</th>
-                    <th>Cantidad del producto</th>
+                    <th>Nombre</th>
+                    <th>Género</th>
                     <th>Tamaños del producto</th>
+                    <th>Categoría</th>
+                    <th>Cantidad</th>
                     <th>Precio</th>
                     <th>Rebaja</th>
-                    <th>Total de vistas</th>
+                    <th>Vistas</th>
                     <th>Valoración</th>
                     <th>Estado</th>
                     <th>Fecha de creado</th>
                     <th>Fecha de actualizado</th>
-                    <th>Acciones</th>
+                    <th>&nbsp;&nbsp; &nbsp;Acciones</th>
                   </tr>
                 </thead>
 
@@ -125,8 +128,9 @@
                   <tr v-for="product in products" :key="product.id">
                     <td>{{ product.name }}</td>
                     <td>{{ getGender(product.gender) }}</td>
-                    <td>{{ product.stock }}</td>
                     <td>{{ product.sizes }}</td>
+                    <td>{{ product.categoryName }}</td>
+                    <td>{{ product.stock }}</td>
                     <td>{{ formatNumber(product.price) }}</td>
                     <td>{{ formatNumber(product.priceCut) }}</td>
                     <td>{{ product.reviewsTotal }}</td>
@@ -137,8 +141,8 @@
                         :color="getStatusColor(product.status).color"
                       />
                     </td>
-                    <td>{{ product.createdAt }}</td>
-                    <td>{{ product.updatedAt }}</td>
+                    <td>{{ formatDate(product.createdAt) }}</td>
+                    <td>{{ formatDate(product.updatedAt) }}</td>
                     <td>
                       <va-button-group preset="plain" color="gray">
                         <va-button color="info" icon="material-icons-person"></va-button>
@@ -178,7 +182,9 @@
                   color="info"
                 />
                 <va-card-content class="col-span-12 lg:col-span-6 flex justify-end pr-20">
-                  <va-button color="info" icon="material-icons-person_add" @click="openForm">Agregar Usuario</va-button>
+                  <va-button color="info" icon="material-icons-add_to_queue" @click="openForm"
+                    >Agregar Producto</va-button
+                  >
                   &nbsp;&nbsp;&nbsp;<va-button color="info" icon="material-icons-refresh" @click="refreshList" />
                 </va-card-content>
               </va-card-content>

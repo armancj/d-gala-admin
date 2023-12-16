@@ -215,7 +215,7 @@ const IsSuAdmin = () => {
       name: 'product',
       displayName: 'Productos',
       meta: {
-        icon: 'vuestic-iconset-ui-elements',
+        icon: 'vuestic-iconset-tables',
       },
       disabled: true,
     },

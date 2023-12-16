@@ -25,6 +25,7 @@ export interface Product {
   deleted: boolean
   userId: number
   colorDefault: string
+  categoryName?: string
 }
 
 export interface Categories {
@@ -226,4 +227,12 @@ export async function findOneResponse(token: string, url: string) {
       },
     })
   ).data
+}
+
+export const formatDate = (dateString: Date) => {
+  const date = new Date(dateString)
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0') // Los meses en JavaScript empiezan en 0
+  const year = date.getFullYear()
+  return `${day}/${month}/${year}`
 }

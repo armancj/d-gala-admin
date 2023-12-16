@@ -1,7 +1,13 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
   import { loadUser } from '../../../stores/global-store'
-  import { CategoriesResult, deleteResponseUser, findOneResponse, getResponseAll } from '../../../util/ApiClient'
+  import {
+    CategoriesResult,
+    deleteResponseUser,
+    findOneResponse,
+    formatDate,
+    getResponseAll,
+  } from '../../../util/ApiClient'
   import CategoryRegister from './CategoryRegister.vue'
   import CategoryEdit from './CategoryEdit.vue'
 
@@ -93,17 +99,16 @@
                     <th>Creado por usuario</th>
                     <th>Fecha de creado</th>
                     <th>Fecha de actualizado</th>
-                    <th>Acciones</th>
+                    <th>&nbsp;&nbsp;Acciones</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   <tr v-for="category in categories" :key="category.id">
                     <td>{{ category.name }}</td>
                     <td>{{ category?.parentId || 'No tiene Categoría Superior' }}</td>
                     <td>{{ category.userId }}</td>
-                    <td>{{ category.createdAt }}</td>
-                    <td>{{ category.updatedAt }}</td>
+                    <td>{{ formatDate(category.createdAt) }}</td>
+                    <td>{{ formatDate(category.updatedAt) }}</td>
                     <td>
                       <va-button-group preset="plain" color="gray">
                         <va-button

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
   import { loadUser } from '../../../stores/global-store'
-  import { deleteResponseUser, findOneResponse, getResponseAll, Result } from '../../../util/ApiClient'
+  import { deleteResponseUser, findOneResponse, formatDate, getResponseAll, Result } from '../../../util/ApiClient'
   import UserRegister from './UserRegister.vue'
   import UserProfile from './UserProfile.vue'
   import UserEdit from './UserEdit.vue'
@@ -120,7 +120,7 @@
                     <th>Rol de Usuario</th>
                     <th>Estado</th>
                     <th>Fecha de creado</th>
-                    <th>Acciones</th>
+                    <th>&nbsp;&nbsp;&nbsp;&nbsp;Acciones</th>
                   </tr>
                 </thead>
 
@@ -139,7 +139,7 @@
                     <td>
                       <va-badge :text="getStatusColor(user.status).name" :color="getStatusColor(user.status).color" />
                     </td>
-                    <td>{{ user.createdAt }}</td>
+                    <td>{{ formatDate(user.createdAt) }}</td>
                     <td>
                       <va-button-group preset="plain" color="gray">
                         <va-button color="info" icon="material-icons-person" @click="openProfile(user.id)"></va-button>
