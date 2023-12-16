@@ -1,11 +1,9 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
   import { loadUser } from '../../../stores/global-store'
-  import { CategoriesResult, deleteResponseUser, findOneResponse, getResponseAll } from '../../../util/ApiClient'
-  import CategoryRegister from './CategoryRegister.vue'
-  import CategoryEdit from './CategoryEdit.vue'
+  import { deleteResponseUser, findOneResponse, getResponseAll, Product } from '../../../util/ApiClient'
 
-  const categories = ref<CategoriesResult[]>([])
+  const products = ref<Product[]>([])
   const activePage = ref(1)
   const totalItems = ref(0)
   const showForm = ref(false)
@@ -14,7 +12,7 @@
   const idToDelete = ref(null)
   const findOne = ref(null)
 
-  const url = '/api/rest/v1/category'
+  const url = '/api/rest/v1/products'
 
   const itemsPerPage = 10
 
@@ -22,41 +20,61 @@
   const openForm = () => {
     showForm.value = !showForm.value
   }
+
+  const formatNumber = (value: number) => {
+    return (value / 100).toFixed(2)
+  }
+
   const openEdit = async (id: number) => {
     const urlOne = `${url}/${id}`
     findOne.value = (await findOneResponse(token, urlOne)).data
     showEdit.value = !showEdit.value
-  }
-  const findOneUser = async (id: number) => {
-    const urlOne = `/api/rest/v1/users/${id}`
-    return (await findOneResponse(token, urlOne)).data.username
   }
   const closeEdit = () => {
     showEdit.value = !showEdit.value
     findOne.value = null
   }
 
+  const getGender = (status: string) => {
+    switch (status) {
+      case 'men':
+        return 'Masculino'
+      case 'women':
+        return 'Femenino'
+      case 'kid':
+        return 'niñes'
+
+      default:
+        return 'Unisex'
+    }
+  }
+
+  function getStatusColor(status: string) {
+    if (status === 'IN_SUPPLIER') {
+      return { color: 'success', name: 'Suplido' }
+    }
+    if (status === 'IN_COMPENSE') {
+      return { color: 'warning', name: 'Compensado' }
+    }
+    return { color: 'danger', name: 'Agotado' }
+  }
+
   const token = loadUser().access_token
-  const fetchData = async () => {
+  const fetchProduct = async () => {
     const skip = (activePage.value - 1) * itemsPerPage
 
     try {
       const response = await getResponseAll(token, url, skip, itemsPerPage)
-      categories.value = response.data.result
-      categories.value = await Promise.all(
-        response.data.result.map(async (category: CategoriesResult) => {
-          category.userId = await findOneUser(category.userId)
-          return category
-        }),
-      )
+      products.value = response.data.result
       totalItems.value = response.data.total
     } catch (error) {
+      console.log('here')
       console.error(error)
     }
   }
 
-  const deleteUser = (userId: any) => {
-    idToDelete.value = userId
+  const deleteProduct = (productId: any) => {
+    idToDelete.value = productId
     showBlurredModal.value = true
   }
   const confirmDelete = async () => {
@@ -71,10 +89,10 @@
     }
   }
 
-  watch(activePage, fetchData, { immediate: true })
+  watch(activePage, fetchProduct, { immediate: true })
 
   const refreshList = () => {
-    fetchData()
+    fetchProduct()
   }
 </script>
 <template>
@@ -88,9 +106,15 @@
               <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
                 <thead>
                   <tr>
-                    <th>Nombre de Categoría</th>
-                    <th>Nombre de Categoría Superior</th>
-                    <th>Creado por usuario</th>
+                    <th>Nombre del producto</th>
+                    <th>Género del producto</th>
+                    <th>Cantidad del producto</th>
+                    <th>Tamaños del producto</th>
+                    <th>Precio</th>
+                    <th>Rebaja</th>
+                    <th>Total de vistas</th>
+                    <th>Valoración</th>
+                    <th>Estado</th>
                     <th>Fecha de creado</th>
                     <th>Fecha de actualizado</th>
                     <th>Acciones</th>
@@ -98,25 +122,41 @@
                 </thead>
 
                 <tbody>
-                  <tr v-for="category in categories" :key="category.id">
-                    <td>{{ category.name }}</td>
-                    <td>{{ category?.parentId || 'No tiene Categoría Superior' }}</td>
-                    <td>{{ category.userId }}</td>
-                    <td>{{ category.createdAt }}</td>
-                    <td>{{ category.updatedAt }}</td>
+                  <tr v-for="product in products" :key="product.id">
+                    <td>{{ product.name }}</td>
+                    <td>{{ getGender(product.gender) }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td>{{ product.sizes }}</td>
+                    <td>{{ formatNumber(product.price) }}</td>
+                    <td>{{ formatNumber(product.priceCut) }}</td>
+                    <td>{{ product.reviewsTotal }}</td>
+                    <td>{{ product.stars }}</td>
+                    <td>
+                      <va-badge
+                        :text="getStatusColor(product.status).name"
+                        :color="getStatusColor(product.status).color"
+                      />
+                    </td>
+                    <td>{{ product.createdAt }}</td>
+                    <td>{{ product.updatedAt }}</td>
                     <td>
                       <va-button-group preset="plain" color="gray">
+                        <va-button color="info" icon="material-icons-person"></va-button>
                         <va-button
                           color="dark"
                           icon="material-icons-mode_edit"
-                          @click="openEdit(category.id)"
+                          @click="openEdit(product.id)"
                         ></va-button>
-                        <va-button color="danger" icon="material-icons-remove_circle" @click="deleteUser(category.id)">
+                        <va-button
+                          color="danger"
+                          icon="material-icons-remove_circle"
+                          @click="deleteProduct(product.id)"
+                        >
                           <va-modal
                             v-model="showBlurredModal"
                             class="mr-2 mb-2"
                             :title="'¿Estás seguro?'"
-                            :message="'Esta acción removerá de manera permanente la categoría en la base de datos.'"
+                            :message="'Esta acción removerá de manera permanente al producto en la base de datos.'"
                             :ok-text="'Sí, eliminar'"
                             :cancel-text="'No, cancelar'"
                             blur
@@ -138,7 +178,7 @@
                   color="info"
                 />
                 <va-card-content class="col-span-12 lg:col-span-6 flex justify-end pr-40">
-                  <va-button color="info" icon="material-icons-note_add" @click="openForm">Agregar Categoría</va-button>
+                  <va-button color="info" icon="material-icons-person_add" @click="openForm">Agregar Usuario</va-button>
                   &nbsp;&nbsp;&nbsp;<va-button color="info" icon="material-icons-refresh" @click="refreshList" />
                 </va-card-content>
               </va-card-content>
@@ -146,16 +186,21 @@
           </va-card>
         </div>
 
-        <CategoryRegister :show-form="showForm" :open-form="openForm" :fetch-category="fetchData" />
-
-        <CategoryEdit
-          v-if="findOne"
+        <!--        <UserRegister :show-form="showForm" :open-form="openForm" :fetch-users="fetchUsers" />
+        <UserEdit
+          v-if="findOneUser"
           :show-form="showEdit"
-          :open-form="openEdit"
-          :close-profile="closeEdit"
-          :fetch-category="fetchData"
-          :category-data="findOne"
+          :open-form="openEditProfile"
+          :close-profile="closeEditProfile"
+          :fetch-users="fetchUsers"
+          :user-data="findOneUser"
         />
+        <UserProfile
+          :open-profile="openProfile"
+          :close-profile="closeProfile"
+          :show-profile="showProfile"
+          :user-data="findOneUser"
+        />-->
       </div>
     </template>
     <template #fallback>

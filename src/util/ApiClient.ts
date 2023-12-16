@@ -4,6 +4,29 @@ export interface Data<T> {
   data: T
 }
 
+export interface Product {
+  id: number
+  createdAt: Date
+  updatedAt: Date
+  name: string
+  content: string
+  priceCut: null
+  price: number
+  slug: string
+  sizes: string[]
+  component: any[]
+  stars: number
+  viewCount: number
+  gender: string
+  tags: string[]
+  stock: number
+  status: string
+  reviewsTotal: number
+  deleted: boolean
+  userId: number
+  colorDefault: string
+}
+
 export interface Categories {
   data: CategoriesData
 }

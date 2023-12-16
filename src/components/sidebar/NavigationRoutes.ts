@@ -1,3 +1,5 @@
+import { loadUser } from '../../stores/global-store'
+
 export interface INavigationRoute {
   name: string
   displayName: string
@@ -5,12 +7,8 @@ export interface INavigationRoute {
   children?: INavigationRoute[]
 }
 
-export default {
-  root: {
-    name: '/',
-    displayName: 'navigationRoutes.home',
-  },
-  routes: [
+const IsSuAdmin = () => {
+  const routes = [
     {
       name: 'dashboard',
       displayName: 'menu.dashboard',
@@ -214,6 +212,14 @@ export default {
       disabled: true,
     },
     {
+      name: 'product',
+      displayName: 'Productos',
+      meta: {
+        icon: 'vuestic-iconset-ui-elements',
+      },
+      disabled: true,
+    },
+    {
       name: 'pages',
       displayName: 'menu.pages',
       meta: {
@@ -235,5 +241,15 @@ export default {
         },
       ],
     },
-  ] as INavigationRoute[],
+  ]
+
+  if (loadUser()?.payload?.role !== 'SUADMIN') return [routes[0], routes[6], routes[7], routes[8]]
+  return routes
+}
+export default {
+  root: {
+    name: '/',
+    displayName: 'navigationRoutes.home',
+  },
+  routes: IsSuAdmin() as INavigationRoute[],
 }
