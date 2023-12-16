@@ -37,6 +37,7 @@
     role: props.userData.role,
     status: props.userData.status,
     id: props.userData.id,
+    avatar: props.userData.avatar,
   }))
 
   const username = ref(user.value.username)

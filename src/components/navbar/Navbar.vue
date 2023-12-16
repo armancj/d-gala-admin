@@ -29,13 +29,15 @@
       </va-button>
     </div>-->
     <template #right>
-      <app-navbar-actions class="app-navbar__actions" :user-name="userName" />
+      <app-navbar-actions class="app-navbar__actions" :user-name="userName" :avatar="avatar" />
     </template>
   </va-navbar>
 </template>
 
 <script setup>
-  import { computed } from 'vue'
+  const { t } = useI18n()
+
+  import { computed, ref } from 'vue'
   import { storeToRefs } from 'pinia'
   import { useGlobalStore } from '../../stores/global-store'
   import { useI18n } from 'vue-i18n'
@@ -45,9 +47,9 @@
   import AppNavbarActions from './components/AppNavbarActions.vue'
 
   const GlobalStore = useGlobalStore()
-  const { t } = useI18n()
 
-  const { isSidebarMinimized, userName } = storeToRefs(GlobalStore)
+  const { isSidebarMinimized, userName, avatar } = storeToRefs(GlobalStore)
+  console.log(avatar)
 
   const { getColors } = useColors()
   const colors = computed(() => getColors())

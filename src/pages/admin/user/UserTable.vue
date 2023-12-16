@@ -19,8 +19,6 @@
 
   const url = '/api/rest/v1/users'
 
-  const customers = ref(data.slice(0, 5))
-
   const itemsPerPage = 10
 
   const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / itemsPerPage)))
@@ -53,7 +51,7 @@
         return 'Super Administrador'
       case 'ADMIN':
         return 'Administrador'
-      case 'WORKED':
+      case 'WORKER':
         return 'Trabajador'
       default:
         return 'Cliente'
@@ -73,7 +71,7 @@
 
     try {
       const response = await getResponseAll(token, url, skip, itemsPerPage)
-      users.value = response.data.result?.filter((user: Result) => !(user.role === 'SUADMIN')) || []
+      users.value = response.data.result /*?.filter((user: Result) => !(user.role === 'SUADMIN')) || []*/
       totalItems.value = response.data.total
     } catch (error) {
       console.log('here')
@@ -130,10 +128,7 @@
                   <tr v-for="user in users" :key="user.id">
                     <td>
                       <va-avatar>
-                        <img
-                          src="https://th.bing.com/th/id/R.e983f81e31dbbde3e9f982c4f78bdc45?rik=Q30BYccxkPEFFg&pid=ImgRaw&r=0"
-                          :alt="customers[0].name"
-                        />
+                        <img :src="user?.avatar || '/file.jpeg'" :alt="user?.username" />
                       </va-avatar>
                     </td>
                     <td>{{ user.username }}</td>

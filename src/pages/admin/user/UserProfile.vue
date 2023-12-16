@@ -34,6 +34,7 @@
     role: props.userData.role,
     status: props.userData.status,
     createdAt: props.userData.createdAt,
+    avatar: props.userData.avatar,
   }))
 
   // console.log(props.userData.profile)
@@ -70,7 +71,7 @@
         <div class="flex items-center justify-between">
           <div class="profile-content">
             <va-avatar>
-              <img :src="customers[2].picture" :alt="customers[2].name" />
+              <img :src="user?.avatar || '/file.jpeg'" :alt="user?.username" />
             </va-avatar>
             <h2 class="text-xl font-bold mb-2">Datos</h2>
             <p class="text-xl font-bold mb-2">

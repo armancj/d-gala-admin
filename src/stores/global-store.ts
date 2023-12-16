@@ -6,6 +6,9 @@ export const useGlobalStore = defineStore('global', {
     return {
       isSidebarMinimized: false,
       userName: loadUser().payload.username,
+      id: loadUser().payload.id,
+      token: loadUser().access_token,
+      avatar: loadUser().payload.avatar,
     }
   },
 
@@ -16,6 +19,10 @@ export const useGlobalStore = defineStore('global', {
 
     changeUserName(userName: string) {
       this.userName = userName
+    },
+
+    changeAvatar(avatar: string) {
+      this.avatar = avatar
     },
   },
 })

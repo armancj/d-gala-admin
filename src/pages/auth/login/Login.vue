@@ -39,7 +39,7 @@
   import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
-  import { Data, LoginResponse, makeRequest } from '../../../util/ApiClient'
+  import { Data, findOneResponse, LoginResponse, makeRequest, Result } from '../../../util/ApiClient'
   const { t } = useI18n()
 
   const email = ref('')
@@ -64,7 +64,12 @@
           username: email.value,
           password: password.value,
         })
-        console.log(response)
+        if ((response?.payload as Result).role === 'USER') {
+          loginError.value = 'Invalido email o contraseña'
+          return
+        }
+
+        console.log(response?.payload)
         localStorage.setItem('user', JSON.stringify(response))
         await router.push({ name: 'dashboard' })
       } catch (error) {

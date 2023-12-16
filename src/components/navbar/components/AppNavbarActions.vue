@@ -5,11 +5,10 @@
     <notification-dropdown class="app-navbar-actions__item" />
     <!-- <settings-dropdown class="app-navbar-actions__item" /> -->
 
-    <profile-dropdown class="app-navbar-actions__item app-navbar-actions__item--profile">
-      <va-avatar font-size="5">
-        <img :src="customers[2].picture" :alt="customers[2].name" />
+    &nbsp;&nbsp;&nbsp;<profile-dropdown class="app-navbar-actions__item app-navbar-actions__item--profile">
+      <va-avatar font-size="3">
+        <img :src="avatar" :alt="userName" class="avatar" />
       </va-avatar>
-      <span>&nbsp;&nbsp;&nbsp;{{ userName }}</span>
     </profile-dropdown>
   </div>
 </template>
@@ -20,22 +19,19 @@
   import NotificationDropdown from './dropdowns/NotificationDropdown.vue'
   import MessageDropdown from './dropdowns/MessageDropdown.vue'
   import ColorDropdown from './dropdowns/ColorDropdown.vue'
-  import { ref } from 'vue'
-  import data from '../../../pages/admin/ui/lists/data.json'
-  import VaIconFaster from '../../icons/VaIconFaster.vue'
 
   withDefaults(
     defineProps<{
       userName?: string
+      avatar?: string
       isTopBar?: boolean
     }>(),
     {
       userName: '',
+      avatar: '/file.jpeg',
       isTopBar: false,
     },
   )
-
-  const customers = ref(data.slice(0, 5))
 
   defineEmits<{
     (e: 'update:isTopBar', isTopBar: boolean): void
@@ -101,5 +97,10 @@
         }
       }
     }
+  }
+  .avatar {
+    width: 30px; /* Ajusta este valor para cambiar el tamaño del avatar */
+    height: 30px;
+    border-radius: 50%;
   }
 </style>

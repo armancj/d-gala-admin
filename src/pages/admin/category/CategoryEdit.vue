@@ -29,6 +29,7 @@
       required: true,
     },
   })
+
   const category = computed(() => ({
     name: props.categoryData.name,
     id: props.categoryData.id,

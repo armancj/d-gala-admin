@@ -22,7 +22,7 @@
         <div class="flex items-center justify-between">
           <div class="profile-content">
             <va-avatar>
-              <img :src="customers[2].picture" :alt="customers[2].name" />
+              <img :src="userProfile?.avatar || '/file.jpeg'" :alt="userProfile?.username" />
             </va-avatar>
             <h2 class="text-xl font-bold mb-2">Mi Perfil</h2>
             <p class="text-xl font-bold mb-2">
@@ -76,7 +76,7 @@
     const user = loadUser()
     try {
       const response = await axios
-        .get('http://localhost:5000/api/rest/v1/users/profile', {
+        .get('http://localhost:5000/api/rest/v1/users/' + loadUser().payload.id, {
           headers: {
             Authorization: `Bearer ${user.access_token}`,
           },

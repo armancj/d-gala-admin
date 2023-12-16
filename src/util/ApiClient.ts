@@ -47,6 +47,7 @@ export interface Result {
   phone: string
   role: string
   status: string
+  avatar?: string
 }
 
 export interface DataAll<T> {
@@ -83,6 +84,7 @@ export interface Payload {
   role: string
   status: string
   updatedAt: Date
+  avatar?: string
 }
 
 export interface Result {

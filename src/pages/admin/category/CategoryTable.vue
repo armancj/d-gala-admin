@@ -24,7 +24,7 @@
   }
   const openEdit = async (id: number) => {
     const urlOne = `${url}/${id}`
-    findOne.value = await findOneResponse(token, urlOne)
+    findOne.value = (await findOneResponse(token, urlOne)).data
     showEdit.value = !showEdit.value
   }
   const findOneUser = async (id: number) => {
@@ -93,6 +93,7 @@
                     <th>Creado por usuario</th>
                     <th>Fecha de creado</th>
                     <th>Fecha de actualizado</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
 

@@ -10,7 +10,7 @@
   />-->
   <va-button
     v-model="currentTheme"
-    class="color-dropdown__content pl-8 pr-8 pt-2 pb-2"
+    class="color-dropdown__content pl-5 pr-5 pt-2 pb-2"
     color="transparent"
     :icon="getIcon"
     @click="functionMode"
@@ -41,7 +41,7 @@
   const currentTheme = ref('light')
 
   const getIcon = computed(() => {
-    return currentTheme.value === 'light' ? 'ion-md-moon' : 'ion-md-sunny'
+    return currentTheme.value === 'light' ? 'ion-ios-moon' : 'ion-ios-sunny'
   })
 
   const functionMode = () => {
