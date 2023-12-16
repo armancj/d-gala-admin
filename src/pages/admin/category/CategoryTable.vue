@@ -137,7 +137,7 @@
                   :pages="totalPages"
                   color="info"
                 />
-                <va-card-content class="col-span-12 lg:col-span-6 flex justify-end pr-40">
+                <va-card-content class="col-span-12 lg:col-span-6 flex justify-end pr-20">
                   <va-button color="info" icon="material-icons-note_add" @click="openForm">Agregar Categoría</va-button>
                   &nbsp;&nbsp;&nbsp;<va-button color="info" icon="material-icons-refresh" @click="refreshList" />
                 </va-card-content>

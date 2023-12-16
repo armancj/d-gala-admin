@@ -177,7 +177,7 @@
                   :pages="totalPages"
                   color="info"
                 />
-                <va-card-content class="col-span-12 lg:col-span-6 flex justify-end pr-40">
+                <va-card-content class="col-span-12 lg:col-span-6 flex justify-end pr-20">
                   <va-button color="info" icon="material-icons-person_add" @click="openForm">Agregar Usuario</va-button>
                   &nbsp;&nbsp;&nbsp;<va-button color="info" icon="material-icons-refresh" @click="refreshList" />
                 </va-card-content>
