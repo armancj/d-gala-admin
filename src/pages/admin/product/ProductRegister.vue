@@ -233,7 +233,7 @@
           </template>
 
           <div v-if="tabValue === 0">
-            <va-card-content>
+            <va-card-content class="overflow-auto">
               <form v-if="showForm">
                 <div class="grid grid-cols-12 gap-6">
                   <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
@@ -307,7 +307,7 @@
             <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
               <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="dark">
                 <va-card-title preset="sss">Etiquetas del Producto</va-card-title>
-                <va-card-content class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                <va-card-content class="overflow-auto flex md:col-span-2 sm:col-span-6 col-span-12">
                   <va-card-content>
                     <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
                       <va-input
@@ -316,6 +316,7 @@
                         label="Etiqueta"
                         type="text"
                         placeholder="Introduzca una nueva Etiqueta"
+                        maxlength="12"
                       >
                         <template #prepend>
                           <va-icon color="grey" name="entypo-tag" />
@@ -349,6 +350,7 @@
                         class="mb-2"
                         type="text"
                         label="componente"
+                        maxlength="12"
                         placeholder="Introduzca el componente"
                       >
                         <template #prepend>
@@ -380,7 +382,7 @@
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="dark">
                 <va-card-title preset="sss">Tamaños del producto</va-card-title>
-                <va-card-content class="col-span-12 lg:col-span-6 flex justify-end">
+                <va-card-content class="overflow-auto col-span-12 lg:col-span-6 flex justify-end">
                   <va-card-content>
                     <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
                       <va-input
@@ -389,6 +391,7 @@
                         type="text"
                         label="componente"
                         placeholder="Introduzca el componente"
+                        maxlength="12"
                       >
                         <template #prepend>
                           <va-icon color="grey" name="vuestic-iconset-components" />
