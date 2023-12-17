@@ -5,7 +5,6 @@
   import { ErrorResult, handleErrors, sendDataToServer } from '../../../util/ApiClient'
   import { loadUser } from '../../../stores/global-store'
   import { AxiosError } from 'axios'
-  import TreeViewEditablePreview from '../ui/tree-view/TreeViewEditablePreview.vue'
 
   const { init } = useToast()
 
@@ -32,7 +31,7 @@
   const slug = ref('')
   const sizes = ref([])
   const tags = ref<string[]>([])
-  const tag = ref('')
+  let tag = ref('Nueva Etiqueta')
   const categoryId = ref('')
   const component = ref<string[]>([])
 
@@ -181,22 +180,24 @@
     }
   }
 
-  const nodes = ref([
-    { label: 'Tags', hasChildren: true, children: tags.value.map((tag) => ({ label: tag, hasChildren: false })) },
+  let dataTags = reactive([
+    { id: 6, label: 'Cables' },
+    { id: 7, label: 'Monitors' },
+    { id: 8, label: 'Keyboards' },
   ])
-  const expandedNodes = ref(nodes.value[0])
+
+  const nodes = ref([{ label: 'Tags', hasChildren: true, children: dataTags }])
+  const expandedNodes = ref([1])
 
   const addTag = () => {
     tags.value.push(tag.value)
-    nodes.value[0].children.push({ label: tag.value, hasChildren: false })
+    dataTags.push({ id: Math.floor(Math.random() * 100000), label: tag.value })
   }
 
-  const removeTag = (nodeToRemove: { label: string; hasChildren: boolean }) => {
-    const index = tags.value.indexOf(nodeToRemove.label)
-    if (index !== -1) {
-      tags.value.splice(index, 1)
-      nodes.value[0].children.splice(index, 1)
-    }
+  const removeTag = (nodeToRemove: { id: number }) => {
+    const index = dataTags.findIndex((prod) => prod.id === nodeToRemove.id)
+    dataTags.splice(index, 1)
+    tags.value.splice(index, 1)
   }
 
   watch(tabValue, (newValue) => {
@@ -288,14 +289,14 @@
             <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
               <va-card-content>
                 <va-tree-view v-model:expanded="expandedNodes" :nodes="nodes">
-                  <template #content="{ node }">
+                  <template #content="node">
                     <div v-if="!node.hasChildren" class="tree-node-editable flex flex-1 flex-wrap items-center">
+                      <va-input v-model="node.label" class="mb-0" />
                       <va-icon name="md_close" color="info" class="ml-2 cursor-pointer" @click="removeTag(node)" />
                     </div>
                   </template>
                 </va-tree-view>
-                <va-input v-model="tag" placeholder="Enter new tag" />
-                <va-button class="mb-2" @click="addTag()"> Add new tag </va-button>
+                <va-button v-model="tag" class="mb-2" @click="addTag()"> Add new product </va-button>
               </va-card-content>
             </div>
           </div>
