@@ -2,6 +2,7 @@
   import { computed, ref, watch } from 'vue'
   import { loadUser } from '../../../stores/global-store'
   import { deleteResponseUser, findOneResponse, formatDate, getResponseAll, Product } from '../../../util/ApiClient'
+  import ProductRegister from './ProductRegister.vue'
 
   const products = ref<Product[]>([])
   const activePage = ref(1)
@@ -50,7 +51,6 @@
   }
 
   function getStatusColor(status: string) {
-    console.log(status)
     if (status === 'IN_SUPPLIER') {
       return { color: 'success', name: 'Suplido' }
     }
@@ -192,8 +192,9 @@
           </va-card>
         </div>
 
-        <!--        <UserRegister :show-form="showForm" :open-form="openForm" :fetch-users="fetchUsers" />
-        <UserEdit
+        <ProductRegister :show-form="showForm" :open-form="openForm" :fetch-products="fetchProduct" />
+
+        <!--       <UserEdit
           v-if="findOneUser"
           :show-form="showEdit"
           :open-form="openEditProfile"
