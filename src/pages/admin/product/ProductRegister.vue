@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { reactive, ref, watch } from 'vue'
+  import { ref, watch, watchEffect } from 'vue'
   import { ToastPosition, useToast } from 'vuestic-ui'
   import * as z from 'zod'
   import { ErrorResult, handleErrors, sendDataToServer } from '../../../util/ApiClient'
@@ -31,7 +31,6 @@
   const slug = ref('')
   const sizes = ref([])
   const tags = ref<string[]>([])
-  let tag = ref('Nueva Etiqueta')
   const categoryId = ref('')
   const component = ref<string[]>([])
 
@@ -150,8 +149,6 @@
         props.openForm()
 
         resetForm()
-
-        console.log(response)
       } catch (error) {
         const failedValues = (await handleErrors(error as AxiosError<ErrorResult>))!
         toastColor.value = 'rgb(228, 34, 34)'
@@ -180,24 +177,42 @@
     }
   }
 
-  let dataTags = reactive([
-    { id: 6, label: 'Cables' },
-    { id: 7, label: 'Monitors' },
-    { id: 8, label: 'Keyboards' },
-  ])
-
-  const nodes = ref([{ label: 'Tags', hasChildren: true, children: dataTags }])
-  const expandedNodes = ref([1])
+  const newTag = ref('')
+  const newComponent = ref('')
 
   const addTag = () => {
-    tags.value.push(tag.value)
-    dataTags.push({ id: Math.floor(Math.random() * 100000), label: tag.value })
+    tags.value.push(newTag.value)
+    newTag.value = '' // reset the input field after adding the tag
   }
 
-  const removeTag = (nodeToRemove: { id: number }) => {
-    const index = dataTags.findIndex((prod) => prod.id === nodeToRemove.id)
-    dataTags.splice(index, 1)
-    tags.value.splice(index, 1)
+  const removeTag = (tagToRemove: string) => {
+    const index = tags.value.indexOf(tagToRemove)
+    if (index !== -1) {
+      tags.value.splice(index, 1)
+    }
+  }
+  const addComponent = () => {
+    component.value.push(newComponent.value)
+    newComponent.value = '' // reset the input field after adding the tag
+  }
+
+  const removeComponet = (componentToRemove: string) => {
+    const index = component.value.indexOf(componentToRemove)
+    if (index !== -1) {
+      component.value.splice(index, 1)
+    }
+  }
+
+  const priceFormat = ref('')
+
+  const handleInput = (event: InputEvent) => {
+    const valueOriginal = (event.target as HTMLInputElement).value.replace('.', '')
+    if (!isNaN(parseInt(valueOriginal)) && valueOriginal.trim() !== '') {
+      const valueFormat = (parseInt(valueOriginal) / 100).toFixed(2)
+      priceFormat.value = valueFormat
+    } else {
+      priceFormat.value = '0.00'
+    }
   }
 
   watch(tabValue, (newValue) => {
@@ -218,86 +233,189 @@
           </template>
 
           <div v-if="tabValue === 0">
-            <form v-if="showForm">
-              <div class="grid grid-cols-12 gap-6">
-                <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-                  <va-input
-                    v-model="name"
-                    placeholder="Entrada de Texto"
-                    color="gray"
-                    label="Nombre del producto"
-                    clearable
-                  >
-                    <template #prepend>
-                      <va-icon color="gray" name="maki-grocery-store" /> &nbsp;&nbsp;&nbsp;&nbsp;
-                    </template>
-                  </va-input>
+            <va-card-content>
+              <form v-if="showForm">
+                <div class="grid grid-cols-12 gap-6">
+                  <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                    <va-input
+                      v-model="name"
+                      placeholder="Entrada de Texto"
+                      color="gray"
+                      label="Nombre del producto"
+                      clearable
+                    >
+                      <template #prepend>
+                        <va-icon color="gray" name="maki-grocery-store" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                      </template>
+                    </va-input>
+                  </div>
+                  <div class="flex md:col-span-3 sm:col-span-6 col-span-12">
+                    <va-input v-model="content" placeholder="Entrada de Texto" label="Contenido" clearable>
+                      <template #prepend>
+                        <va-icon color="gray" name="entypo-book-open" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                      </template>
+                    </va-input>
+                  </div>
+                  <div class="flex md:col-span-2 col-span-12">
+                    <va-select
+                      v-model="genderSelectLabel"
+                      text-by="description"
+                      label="Genero"
+                      track-by="label"
+                      :options="gender"
+                    >
+                      <template #prepend>
+                        <va-icon color="gray" name="ion-md-female" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                      </template>
+                    </va-select>
+                  </div>
+                  <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                    <va-input
+                      v-model="price"
+                      placeholder="Entrada de Texto"
+                      label="Precio"
+                      clearable
+                      @input="handleInput"
+                    >
+                      <template #prepend>
+                        <va-icon color="grey" name="material-icons-attach_money" />
+                      </template>
+                    </va-input>
+                  </div>
+                  <div class="flex md:col-span-4 sm:col-span-6 col-span-12">
+                    <va-input v-model="slug" type="email" label="Correo Electrónico" clearable>
+                      <template #prepend>
+                        <va-icon color="grey" name="email" />
+                      </template>
+                    </va-input>
+                  </div>
+                  <div class="flex md:col-span-2 col-span-12">
+                    <va-select
+                      v-model="statusSelectLabel"
+                      text-by="description"
+                      label="Estado del producto"
+                      track-by="label"
+                      :options="status"
+                    />
+                  </div>
+                  <div class="flex md:col-span-2 sm:col-span-3 col-span-12">
+                    <va-date-input v-model="dateInput.simple" :label="'Fecha de creado'" manual-input clearable />
+                  </div>
                 </div>
-                <div class="flex md:col-span-3 sm:col-span-6 col-span-12">
-                  <va-input v-model="content" placeholder="Entrada de Texto" label="Contenido" clearable>
-                    <template #prepend>
-                      <va-icon color="gray" name="entypo-book-open" /> &nbsp;&nbsp;&nbsp;&nbsp;
-                    </template>
-                  </va-input>
-                </div>
-                <div class="flex md:col-span-2 col-span-12">
-                  <va-select
-                    v-model="genderSelectLabel"
-                    text-by="description"
-                    label="Genero"
-                    track-by="label"
-                    :options="gender"
-                  >
-                    <template #prepend>
-                      <va-icon color="gray" name="ion-md-female" /> &nbsp;&nbsp;&nbsp;&nbsp;
-                    </template>
-                  </va-select>
-                </div>
-                <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-                  <va-input v-model="price" placeholder="Entrada de Texto" label="Precio" clearable>
-                    <template #prepend>
-                      <va-icon color="grey" name="material-icons-attach_money" />
-                    </template>
-                  </va-input>
-                </div>
-                <div>
-                  <ul>
-                    <li v-for="(item, index) in tags" :key="index">{{ item }}</li>
-                  </ul>
-                </div>
-                <div class="flex md:col-span-4 sm:col-span-6 col-span-12">
-                  <va-input v-model="slug" type="email" label="Correo Electrónico" clearable>
-                    <template #prepend>
-                      <va-icon color="grey" name="email" />
-                    </template>
-                  </va-input>
-                </div>
-                <div class="flex md:col-span-2 col-span-12">
-                  <va-select
-                    v-model="statusSelectLabel"
-                    text-by="description"
-                    label="Estado del producto"
-                    track-by="label"
-                    :options="status"
-                  />
-                </div>
-                <div class="flex md:col-span-2 sm:col-span-3 col-span-12">
-                  <va-date-input v-model="dateInput.simple" :label="'Fecha de creado'" manual-input clearable />
-                </div>
-              </div>
-            </form>
+              </form>
+            </va-card-content>
             <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-              <va-card-content>
-                <va-tree-view v-model:expanded="expandedNodes" :nodes="nodes">
-                  <template #content="node">
-                    <div v-if="!node.hasChildren" class="tree-node-editable flex flex-1 flex-wrap items-center">
-                      <va-input v-model="node.label" class="mb-0" />
-                      <va-icon name="md_close" color="info" class="ml-2 cursor-pointer" @click="removeTag(node)" />
+              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="dark">
+                <va-card-title preset="sss">Etiquetas del Producto</va-card-title>
+                <va-card-content class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                  <va-card-content>
+                    <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                      <va-input
+                        v-model="newTag"
+                        class="mb-2"
+                        label="Etiqueta"
+                        type="text"
+                        placeholder="Introduzca una nueva Etiqueta"
+                      >
+                        <template #prepend>
+                          <va-icon color="grey" name="entypo-tag" />
+                        </template>
+                      </va-input>
                     </div>
-                  </template>
-                </va-tree-view>
-                <va-button v-model="tag" class="mb-2" @click="addTag()"> Add new product </va-button>
-              </va-card-content>
+                    <va-button class="mb-2" @click="addTag()"> Agregar nueva Etiqueta </va-button>
+                  </va-card-content>
+                  <div class="mb-8">
+                    <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
+                      <tbody>
+                        <tr v-for="(tag, index) in tags" :key="index">
+                          <td>
+                            {{ tag }}
+                            <va-icon name="md_close" color="info" class="ml-2 cursor-pointer" @click="removeTag(tag)" />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </va-card-content>
+              </va-card>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="dark">
+                <va-card-title preset="sss">Componentes del producto</va-card-title>
+                <va-card-content class="col-span-12 lg:col-span-6 flex justify-end">
+                  <va-card-content>
+                    <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                      <va-input
+                        v-model="newComponent"
+                        class="mb-2"
+                        type="text"
+                        label="componente"
+                        placeholder="Introduzca el componente"
+                      >
+                        <template #prepend>
+                          <va-icon color="grey" name="vuestic-iconset-components" />
+                        </template>
+                      </va-input>
+                    </div>
+                    <va-button class="mb-2" @click="addComponent()"> Agregar nuevo Componente </va-button>
+                  </va-card-content>
+                  <div class="mb-8">
+                    <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
+                      <tbody>
+                        <tr v-for="(comp, index) in component" :key="index">
+                          <td>
+                            {{ comp }}
+                            <va-icon
+                              name="md_close"
+                              color="info"
+                              class="ml-2 cursor-pointer"
+                              @click="removeComponet(comp)"
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </va-card-content>
+              </va-card>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="dark">
+                <va-card-title preset="sss">Tamaños del producto</va-card-title>
+                <va-card-content class="col-span-12 lg:col-span-6 flex justify-end">
+                  <va-card-content>
+                    <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                      <va-input
+                        v-model="newComponent"
+                        class="mb-2"
+                        type="text"
+                        label="componente"
+                        placeholder="Introduzca el componente"
+                      >
+                        <template #prepend>
+                          <va-icon color="grey" name="vuestic-iconset-components" />
+                        </template>
+                      </va-input>
+                    </div>
+                    <va-button class="mb-2" @click="addComponent()"> Agregar nuevo Componente </va-button>
+                  </va-card-content>
+                  <div class="mb-8">
+                    <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
+                      <tbody>
+                        <tr v-for="(comp, index) in component" :key="index">
+                          <td>
+                            {{ comp }}
+                            <va-icon
+                              name="md_close"
+                              color="info"
+                              class="ml-2 cursor-pointer"
+                              @click="removeComponet(comp)"
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </va-card-content>
+              </va-card>
             </div>
           </div>
 
@@ -321,4 +439,10 @@
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss" scoped>
+  .tree-node-editable {
+    .va-input {
+      width: auto;
+    }
+  }
+</style>
