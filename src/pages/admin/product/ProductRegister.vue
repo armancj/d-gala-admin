@@ -1,8 +1,14 @@
 <script setup lang="ts">
-  import { ref, watch, watchEffect } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
   import { ToastPosition, useToast } from 'vuestic-ui'
   import * as z from 'zod'
-  import { ErrorResult, handleErrors, sendDataToServer } from '../../../util/ApiClient'
+  import {
+    CategoriesResult,
+    ErrorResult,
+    getResponseAll,
+    handleErrors,
+    sendDataToServer,
+  } from '../../../util/ApiClient'
   import { loadUser } from '../../../stores/global-store'
   import { AxiosError } from 'axios'
 
@@ -29,10 +35,24 @@
   const content = ref('')
   const price = ref('')
   const slug = ref('')
-  const sizes = ref([])
+  const stock = ref('1')
+  const sizes = ref<string[]>([])
   const tags = ref<string[]>([])
-  const categoryId = ref('')
+  const categoryId = ref<CategoriesResult>()
   const component = ref<string[]>([])
+
+  const categories = ref([])
+
+  onMounted(async () => {
+    try {
+      const response = await getResponseAll(token, '/api/rest/v1/category', 1, 100)
+      categories.value = response.data.result
+    } catch (error) {
+      console.error(error)
+    }
+  })
+
+  const messages = ref(['Aqui va una pequeña descripcion de lo que contiene el producto.'])
 
   const status = ref([
     { label: 'IN_SUPPLIER', description: 'Producto Suplido' },
@@ -83,21 +103,25 @@
     price: string
     slug: string
     gender: string
+    stock: string
     status: string
     sizes: string[]
     tags: string[]
-    categoryId: string
-    component: string[]
+    categoryId?: number
+    component?: string[]
   }) => {
     const schema = z.object({
       name: z.string(),
       price: z.string(z.number()),
-      role: z.string(),
       slug: z.string(),
-      sizes: z.array(z.string()),
-      tags: z.array(z.string()),
-      categoryId: z.string(),
-      component: z.array(z.string()),
+      status: z.string(),
+      gender: z.string(),
+      content: z.string(),
+      stock: z.string(z.number()),
+      sizes: z.array(z.string()).optional(),
+      tags: z.array(z.string()).optional(),
+      categoryId: z.number(),
+      component: z.array(z.string()).optional(),
     })
 
     return schema.parse(data)
@@ -110,8 +134,10 @@
     slug.value = ''
     sizes.value = []
     tags.value = []
-    categoryId.value = ''
+    categoryId.value = undefined
     component.value = []
+    stock.value = '1'
+    tabValue.value = -1
   }
 
   const datePlusDay = (date: Date, days: number) => {
@@ -137,10 +163,10 @@
         slug: slug.value,
         sizes: sizes.value,
         tags: tags.value,
-        categoryId: categoryId.value,
-        component: component.value,
+        categoryId: categoryId.value?.id,
         gender: genderSelectLabel.value.label,
         status: statusSelectLabel.value.label,
+        stock: stock.value,
       })
       try {
         const response = await sendDataToServer(data, url, token)
@@ -167,7 +193,7 @@
     nextTab()
   }
 
-  const tabTitles = ref(['One', 'Two', 'Three'])
+  const tabTitles = ref(['Datos del Producto', 'Colores e imagenes del Producto', 'Three'])
   const tabValue = ref(0)
   const buttonText = ref('Continuar') // El texto inicial del botón
 
@@ -179,6 +205,7 @@
 
   const newTag = ref('')
   const newComponent = ref('')
+  const newSize = ref('')
 
   const addTag = () => {
     tags.value.push(newTag.value)
@@ -203,6 +230,17 @@
     }
   }
 
+  const addSize = () => {
+    sizes.value.push(newSize.value)
+    newSize.value = '' // reset the input field after adding the tag
+  }
+  const removeSize = (sizeToRemove: string) => {
+    const index = sizes.value.indexOf(sizeToRemove)
+    if (index !== -1) {
+      sizes.value.splice(index, 1)
+    }
+  }
+
   const priceFormat = ref('')
 
   const handleInput = (event: InputEvent) => {
@@ -222,7 +260,7 @@
 
 <template>
   <div v-if="showForm">
-    <va-card class="col-span-12">
+    <va-card class="col-span-12 overflow-auto">
       <va-card-title>Registro de Product</va-card-title>
       <va-card-content>
         <va-tabs v-model="tabValue" class="w-fill" grow>
@@ -233,6 +271,7 @@
           </template>
 
           <div v-if="tabValue === 0">
+            <va-divider />
             <va-card-content class="overflow-auto">
               <form v-if="showForm">
                 <div class="grid grid-cols-12 gap-6">
@@ -246,13 +285,6 @@
                     >
                       <template #prepend>
                         <va-icon color="gray" name="maki-grocery-store" /> &nbsp;&nbsp;&nbsp;&nbsp;
-                      </template>
-                    </va-input>
-                  </div>
-                  <div class="flex md:col-span-3 sm:col-span-6 col-span-12">
-                    <va-input v-model="content" placeholder="Entrada de Texto" label="Contenido" clearable>
-                      <template #prepend>
-                        <va-icon color="gray" name="entypo-book-open" /> &nbsp;&nbsp;&nbsp;&nbsp;
                       </template>
                     </va-input>
                   </div>
@@ -282,13 +314,6 @@
                       </template>
                     </va-input>
                   </div>
-                  <div class="flex md:col-span-4 sm:col-span-6 col-span-12">
-                    <va-input v-model="slug" type="email" label="Correo Electrónico" clearable>
-                      <template #prepend>
-                        <va-icon color="grey" name="email" />
-                      </template>
-                    </va-input>
-                  </div>
                   <div class="flex md:col-span-2 col-span-12">
                     <va-select
                       v-model="statusSelectLabel"
@@ -296,17 +321,47 @@
                       label="Estado del producto"
                       track-by="label"
                       :options="status"
+                    >
+                      <template #prepend>
+                        <va-icon color="grey" name="fa-solid fa-truck" />
+                      </template>
+                    </va-select>
+                  </div>
+                  <div class="flex md:col-span-2 col-span-12">
+                    <va-counter v-model="stock" label="Cantidad" margins="200" flat buttons manual-input />
+                  </div>
+                  <div class="flex md:col-span-3 col-span-12">
+                    <va-select
+                      v-model="categoryId"
+                      label="Categoría"
+                      searchable
+                      text-by="name"
+                      track-by="id"
+                      :options="categories"
+                      clearable
                     />
                   </div>
-                  <div class="flex md:col-span-2 sm:col-span-3 col-span-12">
-                    <va-date-input v-model="dateInput.simple" :label="'Fecha de creado'" manual-input clearable />
-                  </div>
+                </div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                <div class="grid grid-cols-3 gap-6 md:col-span-6 col-span-12">
+                  <va-input
+                    v-model="content"
+                    placeholder="Entrada de Texto"
+                    label="Contenido"
+                    :messages="messages"
+                    clearable
+                  >
+                    <template #prepend>
+                      <va-icon color="gray" name="entypo-book-open" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                    </template>
+                  </va-input>
                 </div>
               </form>
             </va-card-content>
+            <va-divider />
             <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="dark">
-                <va-card-title preset="sss">Etiquetas del Producto</va-card-title>
+              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="success">
+                <va-card-title text-color="success" preset="sss">Etiquetas del Producto</va-card-title>
                 <va-card-content class="overflow-auto flex md:col-span-2 sm:col-span-6 col-span-12">
                   <va-card-content>
                     <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
@@ -315,15 +370,16 @@
                         class="mb-2"
                         label="Etiqueta"
                         type="text"
-                        placeholder="Introduzca una nueva Etiqueta"
+                        color="success"
+                        placeholder="Introduzca la etiqueta"
                         maxlength="12"
                       >
                         <template #prepend>
-                          <va-icon color="grey" name="entypo-tag" />
+                          <va-icon color="success" name="entypo-tag" />
                         </template>
                       </va-input>
                     </div>
-                    <va-button class="mb-2" @click="addTag()"> Agregar nueva Etiqueta </va-button>
+                    <va-button class="mb-2" color="success" @click="addTag()"> Agregar nueva Etiqueta </va-button>
                   </va-card-content>
                   <div class="mb-8">
                     <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
@@ -340,25 +396,26 @@
                 </va-card-content>
               </va-card>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="dark">
-                <va-card-title preset="sss">Componentes del producto</va-card-title>
+              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="info">
+                <va-card-title text-color="info" preset="sss">Componentes del producto</va-card-title>
                 <va-card-content class="col-span-12 lg:col-span-6 flex justify-end">
                   <va-card-content>
                     <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
                       <va-input
                         v-model="newComponent"
                         class="mb-2"
+                        color="info"
                         type="text"
                         label="componente"
                         maxlength="12"
                         placeholder="Introduzca el componente"
                       >
                         <template #prepend>
-                          <va-icon color="grey" name="vuestic-iconset-components" />
+                          <va-icon color="info" name="vuestic-iconset-components" />
                         </template>
                       </va-input>
                     </div>
-                    <va-button class="mb-2" @click="addComponent()"> Agregar nuevo Componente </va-button>
+                    <va-button class="mb-2" color="info" @click="addComponent()"> Agregar nuevo Componente </va-button>
                   </va-card-content>
                   <div class="mb-8">
                     <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
@@ -380,37 +437,38 @@
                 </va-card-content>
               </va-card>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="dark">
-                <va-card-title preset="sss">Tamaños del producto</va-card-title>
+              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="warning">
+                <va-card-title text-color="warning" preset="sss">Tamaños del producto</va-card-title>
                 <va-card-content class="overflow-auto col-span-12 lg:col-span-6 flex justify-end">
                   <va-card-content>
                     <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
                       <va-input
-                        v-model="newComponent"
+                        v-model="newSize"
+                        color="warning"
                         class="mb-2"
                         type="text"
-                        label="componente"
-                        placeholder="Introduzca el componente"
+                        label="tamaño"
+                        placeholder="Introduzca el tamaño"
                         maxlength="12"
                       >
                         <template #prepend>
-                          <va-icon color="grey" name="vuestic-iconset-components" />
+                          <va-icon color="warning" name="ion-ios-resize" />
                         </template>
                       </va-input>
                     </div>
-                    <va-button class="mb-2" @click="addComponent()"> Agregar nuevo Componente </va-button>
+                    <va-button class="mb-2" color="warning" @click="addSize()"> Agregar nuevo Tamaño </va-button>
                   </va-card-content>
                   <div class="mb-8">
                     <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
                       <tbody>
-                        <tr v-for="(comp, index) in component" :key="index">
+                        <tr v-for="(size, index) in sizes" :key="index">
                           <td>
-                            {{ comp }}
+                            {{ size }}
                             <va-icon
                               name="md_close"
                               color="info"
                               class="ml-2 cursor-pointer"
-                              @click="removeComponet(comp)"
+                              @click="removeSize(size)"
                             />
                           </td>
                         </tr>
