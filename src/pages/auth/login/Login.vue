@@ -30,7 +30,7 @@
     </div>
 
     <div class="flex justify-center mt-4">
-      <va-button class="my-0" @click="onsubmit">{{ t('auth.login') }}</va-button>
+      <va-button class="my-0" type="submit">{{ t('auth.login') }}</va-button>
     </div>
   </form>
 </template>

@@ -260,104 +260,108 @@
 
 <template>
   <div v-if="showForm">
-    <va-card class="col-span-12 overflow-auto">
+    <va-card>
       <va-card-title>Registro de Product</va-card-title>
-      <va-card-content>
+      <va-card-content
+        class="overflow-auto va-table va-table--striped va-table--hoverable w-full will-change-transform"
+      >
         <va-tabs v-model="tabValue" class="w-fill" grow>
           <template #tabs>
             <va-tab v-for="title in tabTitles.slice(0, 3)" :key="title">
               {{ title }}
             </va-tab>
           </template>
+          <va-divider />
 
           <div v-if="tabValue === 0">
-            <va-divider />
-            <va-card-content class="overflow-auto">
-              <form v-if="showForm">
-                <div class="grid grid-cols-12 gap-6">
-                  <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+            <va-card>
+              <va-card-content class="overflow-auto">
+                <form v-if="showForm">
+                  <div class="grid grid-cols-12 gap-6">
+                    <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                      <va-input
+                        v-model="name"
+                        placeholder="Entrada de Texto"
+                        color="gray"
+                        label="Nombre del producto"
+                        clearable
+                      >
+                        <template #prepend>
+                          <va-icon color="gray" name="maki-grocery-store" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                        </template>
+                      </va-input>
+                    </div>
+                    <div class="flex md:col-span-2 col-span-12">
+                      <va-select
+                        v-model="genderSelectLabel"
+                        text-by="description"
+                        label="Genero"
+                        track-by="label"
+                        :options="gender"
+                      >
+                        <template #prepend>
+                          <va-icon color="gray" name="ion-md-female" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                        </template>
+                      </va-select>
+                    </div>
+                    <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                      <va-input
+                        v-model="price"
+                        placeholder="Entrada de Texto"
+                        label="Precio"
+                        clearable
+                        @input="handleInput"
+                      >
+                        <template #prepend>
+                          <va-icon color="grey" name="material-icons-attach_money" />
+                        </template>
+                      </va-input>
+                    </div>
+                    <div class="flex md:col-span-2 col-span-12">
+                      <va-select
+                        v-model="statusSelectLabel"
+                        text-by="description"
+                        label="Estado del producto"
+                        track-by="label"
+                        :options="status"
+                      >
+                        <template #prepend>
+                          <va-icon color="grey" name="fa-solid fa-truck" />
+                        </template>
+                      </va-select>
+                    </div>
+                    <div class="flex md:col-span-2 col-span-12">
+                      <va-counter v-model="stock" label="Cantidad" margins="200" flat buttons manual-input />
+                    </div>
+                    <div class="flex md:col-span-3 col-span-12">
+                      <va-select
+                        v-model="categoryId"
+                        label="Categoría"
+                        searchable
+                        text-by="name"
+                        track-by="id"
+                        :options="categories"
+                        clearable
+                      />
+                    </div>
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                  <div class="grid grid-cols-3 gap-6 md:col-span-6 col-span-12">
                     <va-input
-                      v-model="name"
+                      v-model="content"
                       placeholder="Entrada de Texto"
-                      color="gray"
-                      label="Nombre del producto"
+                      label="Contenido"
+                      :messages="messages"
                       clearable
                     >
                       <template #prepend>
-                        <va-icon color="gray" name="maki-grocery-store" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <va-icon color="gray" name="entypo-book-open" /> &nbsp;&nbsp;&nbsp;&nbsp;
                       </template>
                     </va-input>
                   </div>
-                  <div class="flex md:col-span-2 col-span-12">
-                    <va-select
-                      v-model="genderSelectLabel"
-                      text-by="description"
-                      label="Genero"
-                      track-by="label"
-                      :options="gender"
-                    >
-                      <template #prepend>
-                        <va-icon color="gray" name="ion-md-female" /> &nbsp;&nbsp;&nbsp;&nbsp;
-                      </template>
-                    </va-select>
-                  </div>
-                  <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-                    <va-input
-                      v-model="price"
-                      placeholder="Entrada de Texto"
-                      label="Precio"
-                      clearable
-                      @input="handleInput"
-                    >
-                      <template #prepend>
-                        <va-icon color="grey" name="material-icons-attach_money" />
-                      </template>
-                    </va-input>
-                  </div>
-                  <div class="flex md:col-span-2 col-span-12">
-                    <va-select
-                      v-model="statusSelectLabel"
-                      text-by="description"
-                      label="Estado del producto"
-                      track-by="label"
-                      :options="status"
-                    >
-                      <template #prepend>
-                        <va-icon color="grey" name="fa-solid fa-truck" />
-                      </template>
-                    </va-select>
-                  </div>
-                  <div class="flex md:col-span-2 col-span-12">
-                    <va-counter v-model="stock" label="Cantidad" margins="200" flat buttons manual-input />
-                  </div>
-                  <div class="flex md:col-span-3 col-span-12">
-                    <va-select
-                      v-model="categoryId"
-                      label="Categoría"
-                      searchable
-                      text-by="name"
-                      track-by="id"
-                      :options="categories"
-                      clearable
-                    />
-                  </div>
-                </div>
-                <div>&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                <div class="grid grid-cols-3 gap-6 md:col-span-6 col-span-12">
-                  <va-input
-                    v-model="content"
-                    placeholder="Entrada de Texto"
-                    label="Contenido"
-                    :messages="messages"
-                    clearable
-                  >
-                    <template #prepend>
-                      <va-icon color="gray" name="entypo-book-open" /> &nbsp;&nbsp;&nbsp;&nbsp;
-                    </template>
-                  </va-input>
-                </div>
-              </form>
-            </va-card-content>
+                </form>
+              </va-card-content>
+            </va-card>
             <va-divider />
             <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
               <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="success">
@@ -501,9 +505,39 @@
 </template>
 
 <style lang="scss" scoped>
-  .tree-node-editable {
-    .va-input {
-      width: auto;
+  fieldset {
+    margin-bottom: 0.5rem;
+  }
+  .toast-position-picker {
+    width: 112px;
+    height: 76px;
+  }
+
+  .position-boxes-row {
+    flex-direction: row;
+
+    &:first-child {
+      margin-bottom: 2px;
+    }
+  }
+
+  .position-box {
+    height: 36px;
+    width: 36px;
+    margin-right: 2px;
+    cursor: pointer;
+    opacity: 0.3;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &:hover {
+      opacity: 0.6;
+    }
+
+    &.selected {
+      opacity: 1;
     }
   }
 </style>
