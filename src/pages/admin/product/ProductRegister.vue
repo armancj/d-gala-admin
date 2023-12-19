@@ -52,6 +52,11 @@
     }
   })
 
+  const closeRegistered = () => {
+    resetForm()
+    props.openForm()
+  }
+
   const messages = ref(['Aqui va una pequeña descripcion de lo que contiene el producto.'])
 
   const status = ref([
@@ -137,7 +142,7 @@
     categoryId.value = undefined
     component.value = []
     stock.value = '1'
-    tabValue.value = -1
+    tabValue.value = 0
   }
 
   const datePlusDay = (date: Date, days: number) => {
@@ -259,12 +264,10 @@
 </script>
 
 <template>
-  <div v-if="showForm">
-    <va-card>
+  <div v-if="showForm" class="tabs grid grid-cols-12 gap-6">
+    <va-card class="col-span-12">
       <va-card-title>Registro de Product</va-card-title>
-      <va-card-content
-        class="overflow-auto va-table va-table--striped va-table--hoverable w-full will-change-transform"
-      >
+      <va-card-content>
         <va-tabs v-model="tabValue" class="w-fill" grow>
           <template #tabs>
             <va-tab v-for="title in tabTitles.slice(0, 3)" :key="title">
@@ -274,8 +277,8 @@
           <va-divider />
 
           <div v-if="tabValue === 0">
-            <va-card>
-              <va-card-content class="overflow-auto">
+            <va-card class="col-span-12">
+              <va-card-content>
                 <form v-if="showForm">
                   <div class="grid grid-cols-12 gap-6">
                     <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
@@ -287,7 +290,7 @@
                         clearable
                       >
                         <template #prepend>
-                          <va-icon color="gray" name="maki-grocery-store" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                          <va-icon color="gray" name="maki-grocery-store" />
                         </template>
                       </va-input>
                     </div>
@@ -300,7 +303,7 @@
                         :options="gender"
                       >
                         <template #prepend>
-                          <va-icon color="gray" name="ion-md-female" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                          <va-icon color="gray" name="ion-md-female" />
                         </template>
                       </va-select>
                     </div>
@@ -345,8 +348,7 @@
                       />
                     </div>
                   </div>
-                  <div>&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                  <div class="grid grid-cols-3 gap-6 md:col-span-6 col-span-12">
+                  <div class="flex grid-cols-2 gap-2 md:col-span-12 col-span-12">
                     <va-input
                       v-model="content"
                       placeholder="Entrada de Texto"
@@ -355,132 +357,138 @@
                       clearable
                     >
                       <template #prepend>
-                        <va-icon color="gray" name="entypo-book-open" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <va-icon color="gray" name="entypo-book-open" />
                       </template>
                     </va-input>
                   </div>
                 </form>
               </va-card-content>
             </va-card>
-            <va-divider />
-            <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="success">
-                <va-card-title text-color="success" preset="sss">Etiquetas del Producto</va-card-title>
-                <va-card-content class="overflow-auto flex md:col-span-2 sm:col-span-6 col-span-12">
+            <va-divider color="transparent" />
+
+            <div class="cards">
+              <div class="cards-container grid grid-cols-12 items-start gap-6 wrap">
+                <va-card class="col-span-12 sm:col-span-6 md:col-span-3" stripe stripe-color="danger">
+                  <va-card-title text-color="danger">Tamaños del producto</va-card-title>
                   <va-card-content>
-                    <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-                      <va-input
-                        v-model="newTag"
-                        class="mb-2"
-                        label="Etiqueta"
-                        type="text"
-                        color="success"
-                        placeholder="Introduzca la etiqueta"
-                        maxlength="12"
-                      >
-                        <template #prepend>
-                          <va-icon color="success" name="entypo-tag" />
-                        </template>
-                      </va-input>
+                    <va-card-content>
+                      <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                        <va-input
+                          v-model="newSize"
+                          color="danger"
+                          class="mb-2"
+                          type="text"
+                          label="tamaño"
+                          placeholder="Introduzca el tamaño"
+                          maxlength="12"
+                        >
+                          <template #prepend>
+                            <va-icon color="danger" name="ion-ios-resize" />
+                          </template>
+                        </va-input>
+                      </div>
+                      <va-button icon="entypo-list-add" color="danger" @click="addSize()">Agregar</va-button>
+                    </va-card-content>
+                    <div>
+                      <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
+                        <tbody>
+                          <tr v-for="(size, index) in sizes" :key="index">
+                            <td>
+                              {{ size }}
+                              <va-icon
+                                name="md_close"
+                                color="danger"
+                                class="ml-2 cursor-pointer"
+                                @click="removeSize(size)"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
-                    <va-button class="mb-2" color="success" @click="addTag()"> Agregar nueva Etiqueta </va-button>
                   </va-card-content>
-                  <div class="mb-8">
-                    <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
-                      <tbody>
-                        <tr v-for="(tag, index) in tags" :key="index">
-                          <td>
-                            {{ tag }}
-                            <va-icon name="md_close" color="info" class="ml-2 cursor-pointer" @click="removeTag(tag)" />
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </va-card-content>
-              </va-card>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="info">
-                <va-card-title text-color="info" preset="sss">Componentes del producto</va-card-title>
-                <va-card-content class="col-span-12 lg:col-span-6 flex justify-end">
+                </va-card>
+                <va-card class="col-span-12 sm:col-span-6 md:col-span-3" stripe stripe-color="success">
+                  <va-card-title text-color="success">Etiquetas del Producto</va-card-title>
                   <va-card-content>
-                    <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-                      <va-input
-                        v-model="newComponent"
-                        class="mb-2"
-                        color="info"
-                        type="text"
-                        label="componente"
-                        maxlength="12"
-                        placeholder="Introduzca el componente"
-                      >
-                        <template #prepend>
-                          <va-icon color="info" name="vuestic-iconset-components" />
-                        </template>
-                      </va-input>
+                    <va-card-content>
+                      <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                        <va-input
+                          v-model="newTag"
+                          class="mb-2"
+                          label="Etiqueta"
+                          type="text"
+                          color="success"
+                          placeholder="Introduzca la etiqueta"
+                          maxlength="20"
+                        >
+                          <template #prepend>
+                            <va-icon color="success" name="entypo-tag" />
+                          </template>
+                        </va-input>
+                      </div>
+                      <va-button icon="entypo-list-add" color="success" @click="addTag()">Agregar</va-button>
+                    </va-card-content>
+                    <div>
+                      <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
+                        <tbody>
+                          <tr v-for="(tag, index) in tags" :key="index">
+                            <td>
+                              {{ tag }}
+                              <va-icon
+                                name="md_close"
+                                color="success"
+                                class="ml-2 cursor-pointer"
+                                @click="removeTag(tag)"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
-                    <va-button class="mb-2" color="info" @click="addComponent()"> Agregar nuevo Componente </va-button>
                   </va-card-content>
-                  <div class="mb-8">
-                    <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
-                      <tbody>
-                        <tr v-for="(comp, index) in component" :key="index">
-                          <td>
-                            {{ comp }}
-                            <va-icon
-                              name="md_close"
-                              color="info"
-                              class="ml-2 cursor-pointer"
-                              @click="removeComponet(comp)"
-                            />
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </va-card-content>
-              </va-card>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <va-card class="col-span-12 sm:col-span-6" stripe stripe-color="warning">
-                <va-card-title text-color="warning" preset="sss">Tamaños del producto</va-card-title>
-                <va-card-content class="overflow-auto col-span-12 lg:col-span-6 flex justify-end">
+                </va-card>
+                <va-card class="col-span-12 sm:col-span-6 md:col-span-3" stripe stripe-color="info">
+                  <va-card-title text-color="info" preset="sss">Componentes del producto</va-card-title>
                   <va-card-content>
-                    <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-                      <va-input
-                        v-model="newSize"
-                        color="warning"
-                        class="mb-2"
-                        type="text"
-                        label="tamaño"
-                        placeholder="Introduzca el tamaño"
-                        maxlength="12"
-                      >
-                        <template #prepend>
-                          <va-icon color="warning" name="ion-ios-resize" />
-                        </template>
-                      </va-input>
+                    <va-card-content>
+                      <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
+                        <va-input
+                          v-model="newComponent"
+                          class="mb-2"
+                          color="info"
+                          type="text"
+                          label="componente"
+                          maxlength="12"
+                          placeholder="Introduzca el componente"
+                        >
+                          <template #prepend>
+                            <va-icon color="info" name="vuestic-iconset-components" />
+                          </template>
+                        </va-input>
+                      </div>
+                      <va-button color="info" icon="entypo-list-add" @click="addComponent()">Agregar</va-button>
+                    </va-card-content>
+                    <div>
+                      <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
+                        <tbody>
+                          <tr v-for="(comp, index) in component" :key="index">
+                            <td>
+                              {{ comp }}
+                              <va-icon
+                                name="md_close"
+                                color="info"
+                                class="ml-2 cursor-pointer"
+                                @click="removeComponet(comp)"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
-                    <va-button class="mb-2" color="warning" @click="addSize()"> Agregar nuevo Tamaño </va-button>
                   </va-card-content>
-                  <div class="mb-8">
-                    <table class="va-table va-table--striped va-table--hoverable w-full will-change-transform">
-                      <tbody>
-                        <tr v-for="(size, index) in sizes" :key="index">
-                          <td>
-                            {{ size }}
-                            <va-icon
-                              name="md_close"
-                              color="info"
-                              class="ml-2 cursor-pointer"
-                              @click="removeSize(size)"
-                            />
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </va-card-content>
-              </va-card>
+                </va-card>
+              </div>
             </div>
           </div>
 
@@ -496,7 +504,7 @@
             <va-button color-presentation color="info" :variant="['gradient', 'hovered']" @click="sendData">
               {{ buttonText }}
             </va-button>
-            <va-button color="danger" @click="openForm"> cancelar </va-button>
+            <va-button color="danger" @click="closeRegistered"> cancelar </va-button>
           </va-card-content>
         </va-tabs>
       </va-card-content>
