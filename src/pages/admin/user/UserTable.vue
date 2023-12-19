@@ -5,7 +5,6 @@
   import UserRegister from './UserRegister.vue'
   import UserProfile from './UserProfile.vue'
   import UserEdit from './UserEdit.vue'
-  import data from '../ui/lists/data.json'
 
   const users = ref<Result[]>([])
   const activePage = ref(1)
@@ -71,7 +70,7 @@
 
     try {
       const response = await getResponseAll(token, url, skip, itemsPerPage)
-      users.value = response.data.result /*?.filter((user: Result) => !(user.role === 'SUADMIN')) || []*/
+      users.value = response.data.result?.filter((user: Result) => !(user.role === 'SUADMIN')) || []
       totalItems.value = response.data.total
     } catch (error) {
       console.log('here')

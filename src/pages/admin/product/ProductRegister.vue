@@ -258,6 +258,13 @@
     }
   }
 
+  const colorArray = ['#4ae387', '#e34a4a', '#4ab2e3', '#db76df', '#f7cc36']
+
+  const palette = ref(colorArray)
+  const paletteValue = ref(colorArray[0])
+  const value = ref('#4AE387')
+  const advancedGallery = ref([])
+
   watch(tabValue, (newValue) => {
     buttonText.value = newValue === tabTitles.value.length - 1 ? 'Guardar' : 'Continuar'
   })
@@ -274,7 +281,7 @@
               {{ title }}
             </va-tab>
           </template>
-          <va-divider />
+          <va-divider color="transparent" />
 
           <div v-if="tabValue === 0">
             <va-card class="col-span-12">
@@ -492,8 +499,33 @@
             </div>
           </div>
 
-          <div v-if="tabValue === 1">
-            <!-- Aquí va el contenido de la segunda pestaña -->
+          <div v-if="tabValue === 1" class="file-upload grid grid-cols-12 gap-6">
+            <div class="color-pickers vuestic-color-picker-page grid grid-cols-12 gap-6">
+              <va-card class="col-span-12">
+                <va-card-title>color</va-card-title>
+                <va-card-content>
+                  <va-color-input v-model="value" />
+                </va-card-content>
+              </va-card>
+
+              <va-card class="col-span-12">
+                <va-card-title>Simple Inline</va-card-title>
+                <va-card-content>
+                  <va-color-palette v-model="paletteValue" :palette="palette" />
+                </va-card-content>
+              </va-card>
+            </div>
+            <va-card class="col-span-12">
+              <va-card-title>algo</va-card-title>
+              <va-card-content>
+                <va-file-upload
+                  v-model="advancedGallery"
+                  type="gallery"
+                  file-types=".png, .jpg, .jpeg, .gif"
+                  dropzone
+                />
+              </va-card-content>
+            </va-card>
           </div>
 
           <div v-if="tabValue === 2">

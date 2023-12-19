@@ -110,6 +110,8 @@
   const token = loadUser().access_token
   const sendData = async () => {
     const nameAndLast = nameAndLastName.value.trim().split(' ', 2)
+    if (loadUser().payload.role === 'SUADMIN' && !rolesSelectModel?.value?.label)
+      rolesSelectModel.value.label = 'SUADMIN'
     const data = validateData({
       firstname: nameAndLast[0],
       lastname: nameAndLast[1],

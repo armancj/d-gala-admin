@@ -76,7 +76,7 @@
     const user = loadUser()
     try {
       const response = await axios
-        .get('http://localhost:5000/api/rest/v1/users/' + loadUser().payload.id, {
+        .get(import.meta.env.VITE_BASE_URL + '/api/rest/v1/users/' + loadUser().payload.id, {
           headers: {
             Authorization: `Bearer ${user.access_token}`,
           },
