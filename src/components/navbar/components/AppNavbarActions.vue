@@ -6,7 +6,7 @@
     <!-- <settings-dropdown class="app-navbar-actions__item" /> -->
 
     &nbsp;&nbsp;&nbsp;<profile-dropdown class="app-navbar-actions__item app-navbar-actions__item--profile">
-      <va-avatar font-size="3">
+      <va-avatar size="38px">
         <img :src="avatar" :alt="userName" class="avatar" />
       </va-avatar>
     </profile-dropdown>
