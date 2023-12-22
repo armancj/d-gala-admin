@@ -1,13 +1,17 @@
 <script setup lang="ts">
-  import { onMounted, ref, watch } from 'vue'
+  import { computed, onMounted, ref, watch } from 'vue'
   import { ToastPosition, useToast } from 'vuestic-ui'
   import * as z from 'zod'
   import {
     CategoriesResult,
+    ColorValue,
+    Data,
     ErrorResult,
     getResponseAll,
     handleErrors,
+    Product,
     sendDataToServer,
+    uploadImagesProduct,
   } from '../../../util/ApiClient'
   import { loadUser } from '../../../stores/global-store'
   import { AxiosError } from 'axios'
@@ -35,7 +39,7 @@
   const content = ref('')
   const price = ref('')
   const slug = ref('')
-  const stock = ref('1')
+  const stock = ref(1)
   const sizes = ref<string[]>([])
   const tags = ref<string[]>([])
   const categoryId = ref<CategoriesResult>()
@@ -108,7 +112,7 @@
     price: string
     slug: string
     gender: string
-    stock: string
+    stock: number
     status: string
     sizes: string[]
     tags: string[]
@@ -122,13 +126,20 @@
       status: z.string(),
       gender: z.string(),
       content: z.string(),
-      stock: z.string(z.number()),
+      stock: z.number(),
       sizes: z.array(z.string()).optional(),
       tags: z.array(z.string()).optional(),
       categoryId: z.number(),
       component: z.array(z.string()).optional(),
     })
 
+    return schema.parse(data)
+  }
+  const validateColor = (data: { hexadecimal: string; productId: number }) => {
+    const schema = z.object({
+      hexadecimal: z.string(),
+      productId: z.number(),
+    })
     return schema.parse(data)
   }
 
@@ -141,8 +152,9 @@
     tags.value = []
     categoryId.value = undefined
     component.value = []
-    stock.value = '1'
+    stock.value = 1
     tabValue.value = 0
+    paletteColor.value = []
   }
 
   const datePlusDay = (date: Date, days: number) => {
@@ -159,6 +171,7 @@
   })
 
   const token = loadUser().access_token
+
   const sendData = async () => {
     if (buttonText.value === 'Guardar') {
       const data = validateData({
@@ -174,7 +187,22 @@
         stock: stock.value,
       })
       try {
-        const response = await sendDataToServer(data, url, token)
+        if (paletteColor.value?.length === 0) throw new Error('400: El Producto Debe tener almenos un color')
+        const notPhoto = paletteColor.value.find((color) => color.photo.length === 0)
+        if (notPhoto) throw new Error('400: El Color Debe tener almenos una imagen')
+
+        const response = await sendDataToServer<Data<Product>>(data as unknown as Data<Product>, url, token)
+        for (const { hexadecimal, photo } of paletteColor.value) {
+          const productId = response.data.data.id!
+          const color = validateColor({ productId, hexadecimal })
+          await sendDataToServer(color, '/api/rest/v1/colors', token)
+
+          const formData = new FormData()
+          for (const photoFile of photo) {
+            formData.append('files', photoFile)
+          }
+          await uploadImagesProduct(productId, color.hexadecimal, formData, token)
+        }
         await props.fetchProducts()
         launchToast()
         props.openForm()
@@ -198,7 +226,7 @@
     nextTab()
   }
 
-  const tabTitles = ref(['Datos del Producto', 'Colores e imagenes del Producto', 'Three'])
+  const tabTitles = ref(['Datos del Producto', 'Colores e imagenes del Producto', 'Guardar producto'])
   const tabValue = ref(0)
   const buttonText = ref('Continuar') // El texto inicial del botón
 
@@ -258,12 +286,22 @@
     }
   }
 
-  const colorArray = ['#4ae387', '#e34a4a', '#4ab2e3', '#db76df', '#f7cc36']
+  const paletteColor = ref<ColorValue[]>([])
+  const paletteValue = ref<string>('')
+  const value = ref('#2b99ee')
+  const addColor = () => {
+    if (value.value) {
+      paletteColor.value.push({ hexadecimal: value.value, photo: [] })
+    }
+  }
+  const removeColor = () => {
+    const index = paletteColor.value.findIndex((color) => color.hexadecimal === paletteValue.value)
+    if (index !== -1) {
+      paletteColor.value.splice(index, 1)
+    }
+  }
 
-  const palette = ref(colorArray)
-  const paletteValue = ref(colorArray[0])
-  const value = ref('#4AE387')
-  const advancedGallery = ref([])
+  const selectedColor = computed(() => paletteColor.value.find((color) => color.hexadecimal === paletteValue.value))
 
   watch(tabValue, (newValue) => {
     buttonText.value = newValue === tabTitles.value.length - 1 ? 'Guardar' : 'Continuar'
@@ -502,25 +540,39 @@
           <div v-if="tabValue === 1" class="file-upload grid grid-cols-12 gap-6">
             <div class="color-pickers vuestic-color-picker-page grid grid-cols-12 gap-6">
               <va-card class="col-span-12">
-                <va-card-title>color</va-card-title>
+                <va-card-title text-color="info">color</va-card-title>
                 <va-card-content>
-                  <va-color-input v-model="value" />
+                  <va-color-input v-model="value" class="mb-2" clearable />
+                  <va-button icon="entypo-list-add" color="info" @click="addColor"> Agregar color </va-button>
                 </va-card-content>
               </va-card>
 
               <va-card class="col-span-12">
-                <va-card-title>Simple Inline</va-card-title>
+                <va-card-title text-color="info">Colores del producto</va-card-title>
                 <va-card-content>
-                  <va-color-palette v-model="paletteValue" :palette="palette" />
+                  <va-color-palette
+                    v-model="paletteValue"
+                    stateful
+                    :palette="paletteColor.map((color) => color.hexadecimal)"
+                  />
+                  <va-button color="transparent" @click="removeColor">
+                    <template #prepend>
+                      <va-icon color="danger" name="entypo-cancel-circled" />
+                    </template>
+                  </va-button>
                 </va-card-content>
               </va-card>
             </div>
-            <va-card class="col-span-12">
-              <va-card-title>algo</va-card-title>
+            <va-card v-if="selectedColor" class="col-span-12">
+              <va-card-title text-color="info"
+                >Imagenes del color:&nbsp;<va-color-indicator preset="outline" :color="selectedColor.hexadecimal"
+              /></va-card-title>
               <va-card-content>
                 <va-file-upload
-                  v-model="advancedGallery"
+                  v-model="selectedColor.photo"
                   type="gallery"
+                  upload-button-text="Subir Imagen"
+                  drop-zone-text="Arratre la imagen"
                   file-types=".png, .jpg, .jpeg, .gif"
                   dropzone
                 />
@@ -528,9 +580,7 @@
             </va-card>
           </div>
 
-          <div v-if="tabValue === 2">
-            <!-- Aquí va el contenido de la tercera pestaña -->
-          </div>
+          <div v-if="tabValue === 2"></div>
 
           <va-card-content class="my-3 flex flex-wrap items-center gap-2 justify-end pr-40">
             <va-button color-presentation color="info" :variant="['gradient', 'hovered']" @click="sendData">

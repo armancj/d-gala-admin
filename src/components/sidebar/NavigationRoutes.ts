@@ -1,4 +1,6 @@
 import { loadUser } from '../../stores/global-store'
+import { watchEffect } from 'vue'
+import { ref } from '@vue/reactivity'
 
 export interface INavigationRoute {
   name: string
@@ -197,7 +199,7 @@ const IsSuAdmin = () => {
     },
     {
       name: 'user',
-      displayName: 'listar Usuarios',
+      displayName: 'Usuarios',
       meta: {
         icon: 'vuestic-iconset-user',
       },
@@ -205,7 +207,7 @@ const IsSuAdmin = () => {
     },
     {
       name: 'category',
-      displayName: 'listar Categorías',
+      displayName: 'Categorías',
       meta: {
         icon: 'vuestic-iconset-ui-elements',
       },
@@ -246,6 +248,7 @@ const IsSuAdmin = () => {
   if (loadUser()?.payload?.role !== 'SUADMIN') return [routes[0], routes[6], routes[7], routes[8]]
   return routes
 }
+
 export default {
   root: {
     name: '/',

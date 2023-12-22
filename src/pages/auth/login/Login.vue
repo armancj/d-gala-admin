@@ -39,7 +39,7 @@
   import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
-  import { Data, findOneResponse, LoginResponse, makeRequest, Result } from '../../../util/ApiClient'
+  import { Data, LoginResponse, makeRequest, Result } from '../../../util/ApiClient'
   const { t } = useI18n()
 
   const email = ref('')
@@ -69,7 +69,6 @@
           return
         }
 
-        console.log(response?.payload)
         localStorage.setItem('user', JSON.stringify(response))
         await router.push({ name: 'dashboard' })
       } catch (error) {

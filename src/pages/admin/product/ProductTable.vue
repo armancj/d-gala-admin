@@ -68,7 +68,6 @@
       const response = await getResponseAll(token, url, skip, itemsPerPage)
       products.value = response.data.result
       totalItems.value = response.data.total
-      console.log(response.data.result)
     } catch (error) {
       console.log('here')
       console.error(error)

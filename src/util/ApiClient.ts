@@ -3,6 +3,10 @@ import axios, { AxiosError, AxiosResponse } from 'axios'
 export interface Data<T> {
   data: T
 }
+export interface ColorValue {
+  hexadecimal: string
+  photo: any[]
+}
 
 export interface Product {
   id: number
@@ -235,4 +239,19 @@ export const formatDate = (dateString: Date) => {
   const month = (date.getMonth() + 1).toString().padStart(2, '0') // Los meses en JavaScript empiezan en 0
   const year = date.getFullYear()
   return `${day}/${month}/${year}`
+}
+
+export async function uploadImagesProduct(id: number, cadena: string, formData: FormData, token: string) {
+  const hexadecimal = encodeURIComponent(cadena)
+  await axios.post(
+    import.meta.env.VITE_BASE_URL + `/api/rest/v1/files/uploads/photo/${id}?hexadecimal=${hexadecimal}`,
+    formData,
+    {
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
 }
