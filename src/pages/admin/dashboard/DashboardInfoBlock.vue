@@ -42,12 +42,10 @@
           {{ t('dashboard.info.componentRichTheme') }}
         </va-card-title>
         <va-card-content>
-          <p class="rich-theme-card-text">
-            Buying the right telescope to take your love of astronomy to the next level is a big next step.
-          </p>
+          <p class="rich-theme-card-text">Aqui hay componentes y formas de confeccionar con cuero.</p>
 
           <div class="mt-4">
-            <va-button color="primary" target="_blank" href="https://github.com/epicmaxco/vuestic-ui">
+            <va-button color="primary" target="_blank" href="https://www.bexley.com/es/es/zapatos.html">
               {{ t('dashboard.info.viewLibrary') }}
             </va-button>
           </div>
@@ -65,7 +63,13 @@
     </va-card>
 
     <va-modal v-model="modal">
-      <va-carousel v-model="currentImageIndex" :items="images" class="gallery-carousel" />
+      <va-carousel
+        v-model="currentImageIndex"
+        :items="images"
+        class="gallery-carousel"
+        effect="transition"
+        autoscroll
+      />
     </va-modal>
   </div>
 </template>
@@ -101,13 +105,7 @@
 
   const modal = ref(false)
   const currentImageIndex = ref(0)
-  const images = ref([
-    'https://i.imgur.com/qSykGko.jpg',
-    'https://i.imgur.com/jYwT08D.png',
-    'https://i.imgur.com/9930myH.jpg',
-    'https://i.imgur.com/2JxhWD6.jpg',
-    'https://i.imgur.com/MpiOWbM.jpg',
-  ])
+  const images = ref(['/image/1.jpeg', '/image/2.jpg', '/image/3.jpg', '/image/4.jpeg', '/image/5.jpeg'])
 
   function showModal() {
     modal.value = true
