@@ -1,8 +1,11 @@
-<!--<template>
+<template>
   <div class="progress-bars flex flex-col gap-10">
     <horizontal-bars />
+    <CircleBars />
+    <BarsState />
+    <ColorfulBars />
   </div>
-</template>-->
+</template>
 
 <script setup lang="ts">
   import HorizontalBars from './Widgets/HorizontalBars.vue'

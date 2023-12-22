@@ -572,7 +572,7 @@
                   v-model="selectedColor.photo"
                   type="gallery"
                   upload-button-text="Subir Imagen"
-                  drop-zone-text="Arratre la imagen"
+                  drop-zone-text="Arrastre la imagen"
                   file-types=".png, .jpg, .jpeg, .gif"
                   dropzone
                 />

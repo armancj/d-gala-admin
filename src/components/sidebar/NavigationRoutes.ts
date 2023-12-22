@@ -245,7 +245,7 @@ const IsSuAdmin = () => {
     },
   ]
 
-  if (loadUser()?.payload?.role !== 'SUADMIN') return [routes[0], routes[6], routes[7], routes[8]]
+  if (loadUser()?.payload?.role !== 'SUADMIN') return [routes[0], routes[1], routes[6], routes[7], routes[8]]
   return routes
 }
 
