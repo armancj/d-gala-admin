@@ -6,8 +6,7 @@
 
     <div class="grid grid-cols-12 gap-6">
       <dashboard-tabs class="col-span-12 lg:col-span-6" @submit="addAddressToMap" />
-
-      <YandexMapsPage ref="yandex-maps-page" class="col-span-12 sm:col-span-6 md:col-span-3" />
+      <YandexMapsPage class="col-span-12 lg:col-span-6" @submit="addAddressToMap" />
     </div>
     <div class="flex justify-center mt-2">
       <!--      <va-button

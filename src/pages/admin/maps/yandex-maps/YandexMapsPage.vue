@@ -1,13 +1,13 @@
 <template>
   <div class="yandex-maps-page">
-    <va-card class="col-span-12 sm:col-span-6 md:col-span-3" stripe stripe-color="info" title="Yandex Maps">
+    <va-card title="Yandex Maps">
       <yandex-map
         map-type="hybrid"
         :coords="[20.96167, -76.95111]"
         :zoom="9"
         :controls="['trafficControl', 'zoomControl', 'geolocationControl', 'fullscreenControl', 'searchControl']"
-        style="width: 100%; height: 65vh"
-        lang="es_ES"
+        style="width: 100%; height: 44vh"
+        lang="en_US"
       >
         <yandex-map-marker v-for="marker in markers" :key="marker['marker-id']" v-bind="marker" />
       </yandex-map>
