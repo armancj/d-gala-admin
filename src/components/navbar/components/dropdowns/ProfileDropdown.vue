@@ -43,6 +43,13 @@
           </div>
         </div>
       </va-content>
+      <!--      <div class="cards-container grid grid-cols-12 items-start gap-6 wrap justify-end">
+        <va-card class="col-span-12 sm:col-span-6 md:col-span-3 justify-end">
+          <va-card-content class="flex md:col-span-2 sm:col-span-6 col-span-12 justify-end">
+            <va-file-upload v-model="advancedGallery" type="gallery" file-types=".png, .jpg, .jpeg, .gif" dropzone />
+          </va-card-content>
+        </va-card>
+      </div>-->
     </va-modal>
   </div>
 </template>
@@ -53,25 +60,16 @@
   import { useColors } from 'vuestic-ui'
   import axios from 'axios'
   import { loadUser } from '../../../../stores/global-store'
-  import { Payload } from '../../../../util/ApiClient'
-  import data from '../../../../pages/admin/ui/lists/data.json'
-
-  const customers = ref(data.slice(0, 5))
 
   const { t } = useI18n()
   const { colors } = useColors()
   const showModal = ref(false)
   const isShown = ref(false)
-  const showLargeModal = ref(true)
 
   const userProfile = ref(null)
+  const advancedGallery = ref<any[]>([userProfile?.value || '/file.jpeg'])
 
   const userData = ref(loadUser().payload)
-
-  const changeShowModal = () => {
-    showModal.value = !showModal.value
-  }
-
   const loadUserProfile = async () => {
     const user = loadUser()
     try {
