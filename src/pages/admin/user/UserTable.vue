@@ -70,7 +70,7 @@
 
     try {
       const response = await getResponseAll(token, url, skip, itemsPerPage)
-      users.value = response.data.result?.filter((user: Result) => !(user.role === 'SUADMIN')) || []
+      users.value = response.data.result.filter((user: Result) => !(user.role === 'SUADMIN')) || []
       totalItems.value = response.data.total
     } catch (error) {
       console.log('here')
@@ -126,7 +126,7 @@
                 <tbody>
                   <tr v-for="user in users" :key="user.id">
                     <td>
-                      <va-avatar>
+                      <va-avatar color="info" size="34px">
                         <img :src="user?.avatar || '/file.jpeg'" :alt="user?.username" />
                       </va-avatar>
                     </td>
