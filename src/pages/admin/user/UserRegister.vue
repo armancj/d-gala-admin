@@ -164,13 +164,18 @@
                 label="Nombre de usuario"
                 clearable
               >
-                <template #prepend>
-                  <va-icon color="info" name="entypo-user" />
-                </template>
+                <template #prepend> <va-icon color="info" name="entypo-user" />&nbsp; </template>
               </va-input>
             </div>
             <div class="flex md:col-span-3 sm:col-span-6 col-span-12">
-              <va-input v-model="nameAndLastName" placeholder="Entrada de Texto" label="Nombre y Apellidos" clearable>
+              <va-input
+                v-model="nameAndLastName"
+                color="info"
+                placeholder="Entrada de Texto"
+                label="Nombre y Apellidos"
+                clearable
+              >
+                <template #prepend> <va-icon color="info" name="entypo-vcard" />&nbsp; </template>
               </va-input>
             </div>
             <div class="flex md:col-span-2 col-span-12">
@@ -179,21 +184,20 @@
                 text-by="description"
                 label="Rol de Usuario"
                 track-by="label"
+                color="info"
                 :options="roles"
-              />
+              >
+                <template #prepend> <va-icon color="info" name="entypo-users" />&nbsp; </template>
+              </va-select>
             </div>
             <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
-              <va-input v-model="phone" placeholder="Entrada de Texto" label="Telefono" clearable>
-                <template #prepend>
-                  <va-icon color="grey" name="phone" />
-                </template>
+              <va-input v-model="phone" color="info" placeholder="Entrada de Texto" label="Telefono" clearable>
+                <template #prepend> <va-icon color="info" name="entypo-mobile" />&nbsp; </template>
               </va-input>
             </div>
             <div class="flex md:col-span-4 sm:col-span-6 col-span-12">
-              <va-input v-model="email" type="email" label="Correo Electrónico" clearable>
-                <template #prepend>
-                  <va-icon color="grey" name="email" />
-                </template>
+              <va-input v-model="email" color="info" type="email" label="Correo Electrónico" clearable>
+                <template #prepend> <va-icon color="info" name="entypo-mail" />&nbsp; </template>
               </va-input>
             </div>
             <div class="flex md:col-span-2 col-span-12">
@@ -203,10 +207,17 @@
                 label="Estado de Cuenta Electronica"
                 track-by="label"
                 :options="status"
-              />
+                color="info"
+              >
+                <template #prepend> <va-icon color="info" name="entypo-flow-cascade" />&nbsp; </template>
+              </va-select>
             </div>
             <div class="flex md:col-span-2 sm:col-span-3 col-span-12">
-              <va-date-input v-model="dateInput.simple" :label="'Fecha de creado'" manual-input clearable />
+              <va-date-input v-model="dateInput.simple" color="info" :label="'Fecha de creado'" manual-input clearable>
+                <template #prepend>
+                  <va-icon color="info" name="fa-solid fa-calendar-alt" />&nbsp;
+                </template> </va-date-input
+              >>
             </div>
           </div>
           <va-card-content class="my-3 flex flex-wrap items-center gap-2 justify-end pr-40">
