@@ -214,10 +214,8 @@
             </div>
             <div class="flex md:col-span-2 sm:col-span-3 col-span-12">
               <va-date-input v-model="dateInput.simple" color="info" :label="'Fecha de creado'" manual-input clearable>
-                <template #prepend>
-                  <va-icon color="info" name="fa-solid fa-calendar-alt" />&nbsp;
-                </template> </va-date-input
-              >>
+                <template #prepend> <va-icon color="info" name="entypo-calendar" />&nbsp; </template>
+              </va-date-input>
             </div>
           </div>
           <va-card-content class="my-3 flex flex-wrap items-center gap-2 justify-end pr-40">
