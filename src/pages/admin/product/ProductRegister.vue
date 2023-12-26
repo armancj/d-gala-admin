@@ -334,9 +334,7 @@
                         label="Nombre del producto"
                         clearable
                       >
-                        <template #prepend>
-                          <va-icon color="gray" name="maki-grocery-store" />
-                        </template>
+                        <template #prepend> <va-icon color="gray" name="maki-grocery-store" />&nbsp; </template>
                       </va-input>
                     </div>
                     <div class="flex md:col-span-2 col-span-12">
@@ -347,9 +345,7 @@
                         track-by="label"
                         :options="gender"
                       >
-                        <template #prepend>
-                          <va-icon color="gray" name="ion-md-female" />
-                        </template>
+                        <template #prepend> <va-icon color="gray" name="ion-md-female" />&nbsp; </template>
                       </va-select>
                     </div>
                     <div class="flex md:col-span-2 sm:col-span-6 col-span-12">
@@ -373,9 +369,7 @@
                         track-by="label"
                         :options="status"
                       >
-                        <template #prepend>
-                          <va-icon color="grey" name="fa-solid fa-truck" />
-                        </template>
+                        <template #prepend> <va-icon color="grey" name="fa-solid fa-truck" />&nbsp; </template>
                       </va-select>
                     </div>
                     <div class="flex md:col-span-2 col-span-12">
@@ -391,7 +385,9 @@
                         track-by="id"
                         :options="categories"
                         clearable
-                      />
+                      >
+                        <template #prepend> <va-icon color="grey" name="fa-solid fa-boxes" />&nbsp; </template>
+                      </va-select>
                     </div>
                   </div>
                   <div class="flex grid-cols-2 gap-2 md:col-span-12 col-span-12">
@@ -403,9 +399,7 @@
                       :messages="messages"
                       clearable
                     >
-                      <template #prepend>
-                        <va-icon color="gray" name="entypo-book-open" />
-                      </template>
+                      <template #prepend> <va-icon color="gray" name="fa-solid fa-book" />&nbsp; </template>
                     </va-input>
                   </div>
                 </form>
